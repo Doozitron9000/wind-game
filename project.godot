@@ -15,6 +15,10 @@ run/main_scene="uid://dsd7tbnp5fwgt"
 config/features=PackedStringArray("4.5", "Mobile")
 config/icon="res://icon.svg"
 
+[global_group]
+
+wind_affected=""
+
 [input]
 
 right={
