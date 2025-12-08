@@ -6,6 +6,9 @@
 script = ExtResource("1_ckl1c")
 
 [node name="Collision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(16, -16, -16, -16, -16, 8, 16, 8)
+
+[node name="Visuals" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(64, 64, 64, -64, -64, -64, -64, 64)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dsd7tbnp5fwgt"]
+[gd_scene load_steps=4 format=3 uid="uid://dsd7tbnp5fwgt"]
 
 [ext_resource type="PackedScene" uid="uid://couekb68vrmn6" path="res://player/player.tscn" id="1_46lwt"]
+[ext_resource type="PackedScene" uid="uid://bm6vmups0um7u" path="res://environment/wind_zone.tscn" id="2_x25rp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x25rp"]
 size = Vector2(128, 16)
@@ -21,3 +22,11 @@ color = Color(0.34348288, 0.45013726, 0.1903821, 1)
 
 [node name="Player" parent="." instance=ExtResource("1_46lwt")]
 position = Vector2(0, -8)
+
+[node name="WindZone" parent="." instance=ExtResource("2_x25rp")]
+position = Vector2(-16, -152)
+
+[node name="Visuals" parent="WindZone" index="0"]
+polygon = PackedVector2Array(136, -8, 40, -184, 8, -48, -64, -64, -64, 64, 80, 88)
+
+[editable path="WindZone"]
