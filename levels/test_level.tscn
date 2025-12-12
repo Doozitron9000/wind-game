@@ -25,8 +25,11 @@ position = Vector2(0, -8)
 
 [node name="WindZone" parent="." instance=ExtResource("2_x25rp")]
 position = Vector2(-16, -152)
+wind = Vector2(50, 50)
 
-[node name="Visuals" parent="WindZone" index="0"]
-polygon = PackedVector2Array(136, -8, 40, -184, 8, -48, -64, -64, -64, 64, 80, 88)
+[node name="Collision" parent="WindZone" index="0"]
+position = Vector2(7.199999, -3.4833317)
+scale = Vector2(1.28125, 1.2291666)
+polygon = PackedVector2Array(44.33171, -36.21694, -16, -16, -55.570732, 35.37628, 50.57561, 80.93561)
 
 [editable path="WindZone"]
