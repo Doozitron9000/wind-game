@@ -1,5 +1,10 @@
 extends MultiMeshInstance2D
 
+# the maximum distance a particle can be from the viewer
+const MAX_Z : float = 0.5
+# how fast particles should move relative tot he wind vector
+const SPEED_MODIFIER : float = 1.5
+
 # The bounding box of the wind zone in global space
 var padded_bounds : Rect2
 
@@ -49,12 +54,19 @@ func position_particles() -> void:
 		var trans := Transform2D()
 		trans.origin = spawn_local
 		multimesh.set_instance_transform_2d(i, trans)
+		
+		# now give this particle a random depth
+		var z_range : float = 1.0-MAX_Z
+		var depth := pow(randf(), 2.0) * z_range + MAX_Z
+		multimesh.set_instance_custom_data(i, Color(0.0, 0.0, depth, 0.0))
 
 ## Sets up the params for the particle shader. These are used to determine
 ## which partciles should be masked
 func bind_shader_parameters() -> void:
 	# get the material
 	var mat : ShaderMaterial = material as ShaderMaterial
+	# bind the wind speed
+	material.set_shader_parameter("wind_dir", zone.wind_speed)
 	# bind the mask texture
 	mat.set_shader_parameter(
 		"mask_tex",
@@ -122,8 +134,9 @@ func move_particles(delta: float) -> void:
 		var pos_local : Vector2 = trans.origin
 		var pos_global = to_global(pos_local)
 
-		# calculate the new position of this instance
-		pos_global += wind_dir * delta
+		# calculate the new position of this instance accounting for z
+		var z : float = multimesh.get_instance_custom_data(i).b
+		pos_global += wind_dir * delta * z * SPEED_MODIFIER
 		
 		# check if we should wrap
 		var should_wrap : bool = ((wind_right and pos_global.x > far_x) or
