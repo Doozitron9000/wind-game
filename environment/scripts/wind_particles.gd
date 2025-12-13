@@ -1,14 +1,14 @@
 extends MultiMeshInstance2D
 
 # The bounding box of the wind zone in global space
-var global_bounds : Rect2
+var padded_bounds : Rect2
 
 # collision polygon area that defines the wind zone's area
 @onready var collision : CollisionPolygon2D = $".."
 # the parent object of the whole zone
 @onready var zone : Area2D = $"../.."
 # the mask viewport used to determine if a particle is visible
-@onready var mask : SubViewport = $"../../MaskViewport"
+@onready var mask : Sprite2D = $"../Mask"
 
 ## on start determine the bounding box and place all the particles
 ## in their start positions
@@ -25,9 +25,7 @@ func _process(delta: float) -> void:
 ## defines the bounding box and initial position of every particle
 func initialize() -> void:
 	# get the bounds of the wind zone
-	global_bounds = zone.get_global_bounds()
-	# set the mask texture for the particles to they mask viewport
-	bind_shader_parameters()
+	padded_bounds = zone.get_padded_bounds()
 	# get the particle count
 	multimesh.instance_count = zone.get_particle_count()
 	# set the initial position of each particles
@@ -38,8 +36,8 @@ func position_particles() -> void:
 	# position each particle randomly within said the bounding box
 	for i in range(multimesh.instance_count):
 		var spawn_global := Vector2(
-			randf_range(global_bounds.position.x, global_bounds.position.x + global_bounds.size.x),
-			randf_range(global_bounds.position.y, global_bounds.position.y + global_bounds.size.y)
+			randf_range(padded_bounds.position.x, padded_bounds.position.x + padded_bounds.size.x),
+			randf_range(padded_bounds.position.y, padded_bounds.position.y + padded_bounds.size.y)
 		)
 
 		# Multimesh instances operate in local space so we need to convert
@@ -65,12 +63,12 @@ func bind_shader_parameters() -> void:
 	# bind the global bounds
 	mat.set_shader_parameter(
 		"bounds_pos",
-		global_bounds.position
+		padded_bounds.position
 	)
 	# bind the bounds size
 	mat.set_shader_parameter(
 		"bounds_size",
-		global_bounds.size
+		padded_bounds.size
 	)
 
 func move_particles(delta: float) -> void:
@@ -83,8 +81,8 @@ func move_particles(delta: float) -> void:
 	# should wrap after crossing, the wind direction, and the height and width
 	# for each instance lets just get all that here and re-use it
 	# height and width
-	var zone_width : float = global_bounds.size.x
-	var zone_height : float = global_bounds.size.y
+	var zone_width : float = padded_bounds.size.x
+	var zone_height : float = padded_bounds.size.y
 	# wind direction
 	var wind_right : bool = wind_dir.x > 0
 	var wind_down : bool = wind_dir.y > 0
@@ -94,18 +92,18 @@ func move_particles(delta: float) -> void:
 	var near_y : float
 	var far_y : float
 	if wind_right:
-		near_x = global_bounds.position.x
-		far_x = global_bounds.position.x + zone_width
+		near_x = padded_bounds.position.x
+		far_x = padded_bounds.position.x + zone_width
 	else:
-		near_x = global_bounds.position.x + zone_width
-		far_x = global_bounds.position.x
+		near_x = padded_bounds.position.x + zone_width
+		far_x = padded_bounds.position.x
 	
 	if wind_down:
-		near_y = global_bounds.position.y
-		far_y = global_bounds.position.y + zone_height
+		near_y = padded_bounds.position.y
+		far_y = padded_bounds.position.y + zone_height
 	else:
-		near_y = global_bounds.position.y + zone_height
-		far_y = global_bounds.position.y
+		near_y = padded_bounds.position.y + zone_height
+		far_y = padded_bounds.position.y
 	
 	# It's possible an instance crosses both the bound's left and right side
 	# at the same time. If this happens and we just wrap it around the first

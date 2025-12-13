@@ -13,9 +13,7 @@ func _ready() -> void:
 
 ## function to initialize this zone (currently just sets size)
 func initialize() -> void:
-	# We need this to match the size of the wind zone
-	var global_bounds : Rect2 = zone.get_global_bounds()
-	size = global_bounds.size
-	var global_shape : PackedVector2Array = zone.get_global_shape()
+	# We need this to match shape of the windzone
+	var padded_shape : PackedVector2Array = zone.get_padded_shape()
 	
-	visible_area.polygon = global_shape
+	visible_area.polygon = padded_shape
