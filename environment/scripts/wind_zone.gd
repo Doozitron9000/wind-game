@@ -7,17 +7,29 @@
 # collision polygon as you see fit.
 extends Area2D
 
+# the speed at which our particle count will math the particles per 1000px
+# value. Below this speed fewer particles will be shown and above it more
+# will be. This is const for now since particle count can still be controlled
+# using the per 1000px value
+const BASE_SPEED : float = 100.0
+
 # get both the visual and collision elements
 @onready var visuals : Polygon2D = $MaskViewport/VisibleArea
 # the collision polygon. THis is the source of truth when it comes to the
 # shape of the wind area with everything else matching it
 @onready var collision : CollisionPolygon2D = $Collision
 
-# The vector representing the wind direction and magnitude
-@export var wind : Vector2
+# the current speed of the wind
+var wind_speed : float
 
-func _ready() -> void:
-	$Collision/DebugSprite.texture = $MaskViewport.get_texture()
+# The vector representing the wind direction and magnitude
+@export var wind : Vector2:
+	# setter also updates wind speed
+	set(value):
+		wind = value
+		wind_speed = wind.length()
+# the base number of particles per 1000 square pixels
+@export var particles_per_1000px2 : float = 1.0
 
 ## When a body enters this it has the wind applied to it
 ## if applicable
@@ -74,3 +86,14 @@ func get_global_shape() -> PackedVector2Array:
 		rebased_polygon.append(global_point - global_bounds.position)
 		
 	return rebased_polygon
+
+## gets the number of particles in this zone
+func get_particle_count() -> int:
+	# calculate the number of particles based on the global bounds
+	var global_bounds : Rect2 = get_global_bounds()
+	var area = global_bounds.size.x * global_bounds.size.y
+	var count : float = (area * (particles_per_1000px2 / 1000.0) *
+						wind_speed / BASE_SPEED)
+	# limit us to having at least on particle and round to nearest rather
+	# than down
+	return max(1, int(round(count)))

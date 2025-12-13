@@ -25,7 +25,7 @@ position = Vector2(0, -8)
 
 [node name="WindZone" parent="." instance=ExtResource("2_x25rp")]
 position = Vector2(-16, -152)
-wind = Vector2(50, 50)
+wind = Vector2(25.035, 12.625)
 
 [node name="Collision" parent="WindZone" index="0"]
 position = Vector2(7.199999, -3.4833317)

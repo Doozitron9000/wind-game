@@ -28,6 +28,13 @@ func initialize() -> void:
 	global_bounds = zone.get_global_bounds()
 	# set the mask texture for the particles to they mask viewport
 	bind_shader_parameters()
+	# get the particle count
+	multimesh.instance_count = zone.get_particle_count()
+	# set the initial position of each particles
+	position_particles()
+	
+## set the initial position of every particles
+func position_particles() -> void:
 	# position each particle randomly within said the bounding box
 	for i in range(multimesh.instance_count):
 		var spawn_global := Vector2(
@@ -45,7 +52,8 @@ func initialize() -> void:
 		trans.origin = spawn_local
 		multimesh.set_instance_transform_2d(i, trans)
 
-## binds the relavent vars to the shaders params
+## Sets up the params for the particle shader. These are used to determine
+## which partciles should be masked
 func bind_shader_parameters() -> void:
 	# get the material
 	var mat : ShaderMaterial = material as ShaderMaterial

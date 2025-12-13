@@ -24,9 +24,6 @@ script = ExtResource("1_ckl1c")
 [node name="Collision" type="CollisionPolygon2D" parent="."]
 polygon = PackedVector2Array(16, -16, -16, -16, -16, 8, 16, 8)
 
-[node name="DebugSprite" type="Sprite2D" parent="Collision"]
-visible = false
-
 [node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="Collision"]
 material = SubResource("ShaderMaterial_tjs8o")
 multimesh = SubResource("MultiMesh_tdf4f")
