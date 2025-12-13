@@ -2,7 +2,10 @@ extends CharacterBody2D
 
 var speed := 200 # the player's max speed
 var jump_velocity := -400 # the velocity imparted by the player jumping
-var wind := Vector2.ZERO # The current wind acting on the player
+# A dictionary of winds currently affecting the player keyed to the source id
+var winds : Dictionary = {}
+# the total wind force currently applying to this object
+var total_wind : Vector2 = Vector2.ZERO
 
 func _physics_process(delta: float) -> void:
 	movement(delta)

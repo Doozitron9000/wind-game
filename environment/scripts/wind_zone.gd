@@ -51,15 +51,26 @@ func _ready() -> void:
 ## if applicable
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("wind_affected"):
-		body.wind = wind
+		# add this wind to the body's dictionary keyed to the id of this
+		body.winds[get_instance_id()] = wind
+		recalculate_wind(body)
 
 ## When a body exits  this it has the wind removed from it
 ## if applicable..... IF we end up having overlapping windzones
 ## this will be a problem and will need to be addressed
 func _on_body_exited(body: Node2D) -> void:
 	if body.is_in_group("wind_affected"):
-		body.wind = Vector2.ZERO
-		
+		# remove this wind from the leaving object's dictionary
+		body.winds.erase(get_instance_id())
+		recalculate_wind(body)
+
+## recalculate the total wind of a wind affected object
+func recalculate_wind(body: Node2D) -> void:
+	var total := Vector2.ZERO
+	for v in body.winds.values():
+		total += v
+	body.total_wind = total
+			
 ## gets the bounding box of the wind zone
 func get_global_bounds() -> Rect2:
 	# make default values extreme so the first point

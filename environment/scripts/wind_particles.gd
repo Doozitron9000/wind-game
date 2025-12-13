@@ -62,7 +62,8 @@ func position_particles() -> void:
 		multimesh.set_instance_custom_data(i, Color(0.0, 0.0, depth, 0.0))
 
 ## Sets up the params for the particle shader. These are used to determine
-## which partciles should be masked
+## which particles should be masked as well as the particle size, speed
+## and streaks
 func bind_shader_parameters() -> void:
 	# get the material
 	var mat : ShaderMaterial = material as ShaderMaterial
