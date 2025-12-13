@@ -38,6 +38,7 @@ func initialize() -> void:
 	
 ## set the initial position of every particles
 func position_particles() -> void:
+	var angle : float = zone.wind.angle()
 	# position each particle randomly within said the bounding box
 	for i in range(multimesh.instance_count):
 		var spawn_global := Vector2(
@@ -49,9 +50,9 @@ func position_particles() -> void:
 		# our spawn point to that before applying it
 		var spawn_local = to_local(spawn_global)
 		
-		# create the transform to apply to the instance
+		# create the transform to apply to the instance, rotate it,
 		# and apply it
-		var trans := Transform2D()
+		var trans := Transform2D(angle, spawn_local)
 		trans.origin = spawn_local
 		multimesh.set_instance_transform_2d(i, trans)
 		
@@ -66,7 +67,7 @@ func bind_shader_parameters() -> void:
 	# get the material
 	var mat : ShaderMaterial = material as ShaderMaterial
 	# bind the wind speed
-	material.set_shader_parameter("wind_dir", zone.wind_speed)
+	material.set_shader_parameter("wind_speed", zone.wind_speed)
 	# bind the mask texture
 	mat.set_shader_parameter(
 		"mask_tex",
