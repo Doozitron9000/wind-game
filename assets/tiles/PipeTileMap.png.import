@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cm1isg3odqul5"
-path="res://.godot/imported/PipeTileMap.png-2fd40ab6cf311f1664c7252b4583f444.ctex"
+path="res://.godot/imported/PipeTileMap.png-c6718ecf15e9c5403b2fc7f4bbc89b44.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tilesets/PipeTileMap.png"
-dest_files=["res://.godot/imported/PipeTileMap.png-2fd40ab6cf311f1664c7252b4583f444.ctex"]
+source_file="res://assets/tiles/PipeTileMap.png"
+dest_files=["res://.godot/imported/PipeTileMap.png-c6718ecf15e9c5403b2fc7f4bbc89b44.ctex"]
 
 [params]
 
