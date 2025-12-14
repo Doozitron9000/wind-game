@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=4 uid="uid://dsd7tbnp5fwgt"]
+[gd_scene load_steps=14 format=4 uid="uid://dsd7tbnp5fwgt"]
 
 [ext_resource type="PackedScene" uid="uid://couekb68vrmn6" path="res://player/player.tscn" id="1_46lwt"]
 [ext_resource type="Script" uid="uid://dka11c51g3we4" path="res://scripts/TestLevel_deadzone.gd" id="1_x25rp"]
@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://62v7yjtwaqaf" path="res://assets/Clouds3.png" id="7_axl34"]
 [ext_resource type="TileSet" uid="uid://dd3ipq8r2ennf" path="res://assets/tiles/ground_tileset.tres" id="9_ly3hx"]
 [ext_resource type="TileSet" uid="uid://7akggcv6xvr7" path="res://assets/tiles/pipes.tres" id="10_4n8tn"]
+[ext_resource type="PackedScene" uid="uid://bm6vmups0um7u" path="res://environment/wind_zone.tscn" id="11_wkb0e"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmgay"]
 size = Vector2(11741.25, 211)
@@ -97,3 +98,13 @@ tile_set = ExtResource("9_ly3hx")
 [node name="Pipes" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAD+////AAABAAcAAAD/////AAABAAUAAGAAAP//AAABAAYAAGABAP//AAABAAAAAFD+//7/AAABAAMAAAD+//3/AAABAAoAAAD+//z/AAABAAMAAAD+//v/AAABAAIAAAD+//r/AAABAAEAAAD+//n/AAABAAoAAAD+//j/AAABAAEAAAD+//f/AAABAAAAAAABAAAAAAABAAQAAAABAAEAAAABAAwAAAD+/wAAAAABAAcAAAD//wAAAAABAAcAAFD//wEAAAABAAsAAFD+/wEAAAABAAwAAFAAAAAAAAABAAEAAGAAAAEAAAABAAMAAGD///f/AAABAAMAAGAAAPf/AAABAAIAAGABAPf/AAABAAoAAGACAPf/AAABAAUAAGADAPf/AAABAAYAAGAEAPf/AAABAAAAAFAEAPj/AAABAAwAAFAFAPj/AAABAAIAAGAGAPj/AAABAAAAAFAGAPv/AAABAAwAAAAGAPn/AAABAAgAAAAGAPr/AAABAAkAAAAFAPv/AAABAAMAAGAEAPv/AAABAAIAAGADAPv/AAABAAEAAGACAPv/AAABAAkAAGACAAAAAAABAAEAAGADAAAAAAABAAIAAGAEAAAAAAABAAMAAGAFAAAAAAABAAEAAGAGAAAAAAABAAIAAGAHAAAAAAABAAMAAGAIAAAAAAABAAgAAGAPAP3/AAAAAAIAAGAOAP3/AAAAAAEAAGAQAP3/AAAAAAMAAGANAP3/AAAAAAoAAGARAP3/AAAAAAoAAGA=")
 tile_set = ExtResource("10_4n8tn")
+
+[node name="WindZone" parent="." instance=ExtResource("11_wkb0e")]
+position = Vector2(952, -288)
+wind = Vector2(-300, 0)
+particles_per_1000px2 = 0.02
+
+[node name="Collision" parent="WindZone" index="0"]
+polygon = PackedVector2Array(200, -216, -312, -288, -648, -288, -632, -216, -512, -208, -512, 8, 200, 32)
+
+[editable path="WindZone"]

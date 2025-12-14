@@ -19,6 +19,8 @@ const WALL_SLIDE : float = 200.0
 const SPRINT_COST : float = 30.0
 # The stamina cost of gripping on a wall
 const GRIP_COST : float = 15.0
+# The fraction of wind applied when the player is grounded
+const TRACTION : float = 0.5
 
 # A dictionary of winds currently affecting the player keyed to the source id
 var winds : Dictionary = {}
@@ -62,11 +64,15 @@ func movement(delta: float) -> void:
 	var speed_change : float = ACCELERATION
 	# if we are on the floor we can move as normal
 	if is_on_floor():
+		# if we are on the floor we add a reduced total wind to ourselves
+		move_target += total_wind * TRACTION
 		# so our move target is just our speed * our input direction
-		move_target.x = input_dir * current_speed
+		move_target.x += input_dir * current_speed
 	# if we aren't on the floor gravity should be applied
 	else:
-		# first apply gravity accounting for wall slide
+		# if we are in the air the full wind force should act on us
+		move_target += total_wind
+		# next apply gravity accounting for wall slide
 		# if we are pushing against a wall we should slide not fall.
 		# this should only apply if we are moving down tho otherwise
 		# jumping against walls results in sliding up
@@ -79,7 +85,7 @@ func movement(delta: float) -> void:
 		else:
 			velocity.y += gravity * delta
 		# and our move target should be reduced to our air control
-		move_target.x = input_dir * current_speed * AIR_CONTROL
+		move_target.x += input_dir * current_speed * AIR_CONTROL
 		# our speed change in mid air should default to its base line
 		# which represents both player control and wind resistance
 		speed_change = BASE_AIR_DECEL
