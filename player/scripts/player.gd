@@ -15,6 +15,10 @@ const JUMP_VELOCITY : float = -700.0
 const SPRINT_MULTIPLIER: float = 1.0
 # The max speed at which the player can slide down wall while gripping
 const WALL_SLIDE : float = 200.0
+# The stamina cost of sprinting per second
+const SPRINT_COST : float = 30.0
+# The stamina cost of gripping on a wall
+const GRIP_COST : float = 15.0
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -30,19 +34,17 @@ func _physics_process(delta: float) -> void:
 ## Handle the player's movement for this tick
 ## [param delta] is the time (in seconds) since this was last called
 func movement(delta: float) -> void:
+	# make a var to track if we spent any stamin this tick. We will use it
+	# later to determine if stamina should recharge and if we need to
+	# check if the pc is now drained
+	var stamina_spent : bool = false
 	# Determine our current speed and sprint status
 	var current_speed : float = SPEED
 	if Input.is_action_pressed("sprint"):
 		if stamina > 0 and stamina_drained == false:
 			current_speed *= SPRINT_MULTIPLIER
-			stamina -= 30 * delta
-			print(stamina)
-		else:
-			stamina_drained = true
-			recover_stamina(delta)
-	# if we aren't sprinting we should always recover stamina if possible
-	else:
-		recover_stamina(delta)
+			stamina -= SPRINT_COST * delta
+			stamina_spent = true
 	# get the player's movement axis
 	# this returns a value between -1 and 1 where -1 is maximally leftward and
 	# 1 is maximally rightward
@@ -63,8 +65,12 @@ func movement(delta: float) -> void:
 		# if we are pushing against a wall we should slide not fall.
 		# this should only apply if we are moving down tho otherwise
 		# jumping against walls results in sliding up
-		if is_on_wall() && get_wall_normal().x == input_dir * -1 && velocity.y >= WALL_SLIDE:
+		#  for now i have also set this to consume stamina
+		if (is_on_wall() && get_wall_normal().x == input_dir * -1 &&
+				velocity.y >= WALL_SLIDE && stamina > 0 && !stamina_drained):
 				velocity.y = WALL_SLIDE
+				stamina -= GRIP_COST * delta
+				stamina_spent = true
 		else:
 			velocity.y += gravity * delta
 		# and our move target should be reduced to our air control
@@ -75,7 +81,7 @@ func movement(delta: float) -> void:
 		# to give the player more control in the air this should be reduced
 		# when the player is pulling in the same direction as their movement
 		if input_dir == sign(velocity.x):
-			speed_change = BASE_AIR_DECEL*1-AIR_CONTROL
+			speed_change = BASE_AIR_DECEL*(1-AIR_CONTROL)
 		
 	# Jump
 	if Input.is_action_just_pressed("jump"):
@@ -96,10 +102,18 @@ func movement(delta: float) -> void:
 				# now apply the jump velocity
 				velocity += jump_direction * JUMP_VELOCITY * -1
 				stamina -= wall_jump_stamina
-				if stamina == 0:
-					stamina_drained = true
+				stamina_spent = true
 			
 	
+	# now check if stamina has been spent. If not recharge stamina. If so,
+	# check if we should now enter the drained state
+	if stamina_spent:
+		if stamina <= 0:
+			stamina_drained = true
+	else:
+		recover_stamina(delta)
+	#print the stamina debug output
+	print(stamina)
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
@@ -112,4 +126,3 @@ func recover_stamina(delta: float) -> void:
 	# drained
 	if stamina >= 70:
 		stamina_drained = false
-	print(stamina)
