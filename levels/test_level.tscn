@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dsd7tbnp5fwgt"]
+[gd_scene load_steps=4 format=4 uid="uid://dsd7tbnp5fwgt"]
 
 [ext_resource type="PackedScene" uid="uid://couekb68vrmn6" path="res://player/player.tscn" id="1_46lwt"]
+[ext_resource type="TileSet" uid="uid://7akggcv6xvr7" path="res://tilesets/pipes.tres" id="2_x25rp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_x25rp"]
 size = Vector2(128, 16)
@@ -21,3 +22,7 @@ color = Color(0.34348288, 0.45013726, 0.1903821, 1)
 
 [node name="Player" parent="." instance=ExtResource("1_46lwt")]
 position = Vector2(0, -8)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAD+//z/AAABAAAAAAD+//3/AAABAAEAAAD+//7/AAAAAAoAAAD+////AAABAAgAAAD+/wAAAAABAAkAAAD+/wEAAAABAAAAACD//wEAAAABAAEAAGAAAAEAAAABAAIAAGABAAEAAAABAAMAAGACAAEAAAAAAAcAABACAAAAAAAAAAMAAAACAP//AAAAAAIAAAACAP7/AAAAAAEAAAACAP3/AAAAAAQAAAACAPz/AAAAAAkAAAACAPv/AAAAAAAAABABAPv/AAAAAAAAAAABAPz/AAAAAAcAABABAP3/AAAAAAAAAGD///z/AAABAAgAAGAAAPz/AAABAAkAAGA=")
+tile_set = ExtResource("2_x25rp")
