@@ -12,7 +12,9 @@ const SPEED : float = 500.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
 # how much faster the player runs while sprinting
-const SPRINT_MULTIPLIER: float = 1.
+const SPRINT_MULTIPLIER: float = 1.0
+# The max speed at which the player can slide down wall while gripping
+const WALL_SLIDE : float = 200.0
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -57,8 +59,14 @@ func movement(delta: float) -> void:
 		move_target.x = input_dir * current_speed
 	# if we aren't on the floor gravity should be applied
 	else:
-		# first apply gravity
-		velocity.y += gravity * delta
+		# first apply gravity accounting for wall slide
+		# if we are pushing against a wall we should slide not fall.
+		# this should only apply if we are moving down tho otherwise
+		# jumping against walls results in sliding up
+		if is_on_wall() && get_wall_normal().x == input_dir * -1 && velocity.y >= WALL_SLIDE:
+				velocity.y = WALL_SLIDE
+		else:
+			velocity.y += gravity * delta
 		# and our move target should be reduced to our air control
 		move_target.x = input_dir * current_speed * AIR_CONTROL
 		# our speed change in mid air should default to its base line
