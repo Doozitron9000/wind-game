@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 project/assembly_name="Wind Game"
 
+[global_group]
+
+wind_affected=""
+
 [input]
 
 right={

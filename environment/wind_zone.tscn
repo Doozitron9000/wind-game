@@ -1,0 +1,74 @@
+[gd_scene load_steps=13 format=3 uid="uid://bm6vmups0um7u"]
+
+[ext_resource type="Script" uid="uid://dmn04hraopbge" path="res://environment/scripts/wind_zone.gd" id="1_ckl1c"]
+[ext_resource type="Shader" uid="uid://cuuk8txxp3job" path="res://environment/shaders/wind_particles.gdshader" id="2_glohd"]
+[ext_resource type="Script" uid="uid://cgmof0qofocvl" path="res://environment/scripts/wind_particles.gd" id="2_tdf4f"]
+[ext_resource type="Texture2D" uid="uid://njvq4r2o8ysd" path="res://environment/images/wind_particle.png" id="3_hs1qc"]
+[ext_resource type="Script" uid="uid://0kvatmlf1m2e" path="res://environment/scripts/wind_mask.gd" id="3_noi0p"]
+[ext_resource type="Shader" uid="uid://rn5yhiufcg18" path="res://environment/shaders/hor_wind_mask_blur.gdshader" id="5_tjs8o"]
+[ext_resource type="Shader" uid="uid://dpe8r6ktfo66e" path="res://environment/shaders/ver_wind_mask_blur.gdshader" id="6_ajv6u"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_tjs8o"]
+shader = ExtResource("2_glohd")
+shader_parameter/bounds_pos = Vector2(0, 0)
+shader_parameter/bounds_size = Vector2(0, 0)
+shader_parameter/wind_speed = 0.0
+
+[sub_resource type="QuadMesh" id="QuadMesh_noi0p"]
+
+[sub_resource type="MultiMesh" id="MultiMesh_ajv6u"]
+use_custom_data = true
+custom_aabb = AABB(0, 0, 0, 3.065, 3.015, 0)
+mesh = SubResource("QuadMesh_noi0p")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ajv6u"]
+shader = ExtResource("5_tjs8o")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hs1qc"]
+shader = ExtResource("6_ajv6u")
+
+[node name="WindZone" type="Area2D"]
+script = ExtResource("1_ckl1c")
+
+[node name="Collision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(16, -16, -16, -16, -16, 8, 16, 8)
+
+[node name="Mask" type="Sprite2D" parent="Collision"]
+visible = false
+
+[node name="Particles" type="MultiMeshInstance2D" parent="Collision"]
+material = SubResource("ShaderMaterial_tjs8o")
+multimesh = SubResource("MultiMesh_ajv6u")
+texture = ExtResource("3_hs1qc")
+script = ExtResource("2_tdf4f")
+
+[node name="MaskViewport" type="SubViewport" parent="."]
+disable_3d = true
+render_target_update_mode = 4
+script = ExtResource("3_noi0p")
+
+[node name="Background" type="ColorRect" parent="MaskViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="VisibleArea" type="Polygon2D" parent="MaskViewport"]
+polygon = PackedVector2Array(64, 64, 64, -64, -64, -64, -64, 64)
+
+[node name="HorizontalMaskBlur" type="SubViewport" parent="."]
+
+[node name="HoriztonalBlur" type="Sprite2D" parent="HorizontalMaskBlur"]
+material = SubResource("ShaderMaterial_ajv6u")
+centered = false
+
+[node name="VerticalMaskBlur" type="SubViewport" parent="."]
+
+[node name="VerticalBlur" type="Sprite2D" parent="VerticalMaskBlur"]
+material = SubResource("ShaderMaterial_hs1qc")
+centered = false
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

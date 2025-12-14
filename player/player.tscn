@@ -5,7 +5,7 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["wind_affected"]]
 script = ExtResource("1_oul6g")
 
 [node name="Display" type="ColorRect" parent="."]

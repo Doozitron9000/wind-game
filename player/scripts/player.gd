@@ -20,6 +20,11 @@ const SPRINT_COST : float = 30.0
 # The stamina cost of gripping on a wall
 const GRIP_COST : float = 15.0
 
+# A dictionary of winds currently affecting the player keyed to the source id
+var winds : Dictionary = {}
+# the total wind force currently applying to this object
+var total_wind : Vector2 = Vector2.ZERO
+
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
 
