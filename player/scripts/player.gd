@@ -14,6 +14,9 @@ const JUMP_VELOCITY : float = -700.0
 # how much faster the player runs while sprinting
 const SPRINT_MULTIPLIER: float = 1.
 
+# a temporary var representing teh amount of stamina required to wall jump
+var wall_jump_stamina: float = 20.0
+
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var stamina := 100.0 # the player's current stamina
 var stamina_drained: bool = false # whether the player's stamina is drained
@@ -73,16 +76,21 @@ func movement(delta: float) -> void:
 			velocity.y = JUMP_VELOCITY
 		# otherwise if they are pushing against a wall they can
 		# wall jump but their velocity should push them away
-		# from the wall
+		# from the wall. This should also require stamina
 		elif is_on_wall():
-			# so find the opposite direction of the wall we 
-			# just touched
-			var wall_normal : Vector2 = get_wall_normal()
-			# we want to jump up a bit so find the vector half way between
-			# up and the wall we just hit and jump that way
-			var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
-			# now apply the jump velocity
-			velocity += jump_direction * JUMP_VELOCITY * -1
+			if !stamina_drained && stamina >= wall_jump_stamina:
+				# so find the opposite direction of the wall we 
+				# just touched
+				var wall_normal : Vector2 = get_wall_normal()
+				# we want to jump up a bit so find the vector half way between
+				# up and the wall we just hit and jump that way
+				var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
+				# now apply the jump velocity
+				velocity += jump_direction * JUMP_VELOCITY * -1
+				stamina -= wall_jump_stamina
+				if stamina == 0:
+					stamina_drained = true
+			
 	
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
