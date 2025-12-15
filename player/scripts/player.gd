@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
 # how rate at which the player can speed up and slow down while grounded
@@ -33,6 +34,9 @@ var wall_jump_stamina: float = 20.0
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var stamina := 100.0 # the player's current stamina
 var stamina_drained: bool = false # whether the player's stamina is drained
+
+# A Node2D where the player will respawn
+@export var respawn_point : Node2D
 
 # every physics tick update the player's movement
 func _physics_process(delta: float) -> void:
@@ -137,3 +141,12 @@ func recover_stamina(delta: float) -> void:
 	# drained
 	if stamina >= 70:
 		stamina_drained = false
+		
+func respawn() -> void:
+	global_position = respawn_point.global_position
+	velocity = Vector2.ZERO
+	print("Player died!")
+
+
+func _on_spike_detection_body_entered(body: Node2D) -> void:
+	respawn()
