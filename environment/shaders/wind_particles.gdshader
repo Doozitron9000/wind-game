@@ -7,6 +7,8 @@ const float MAX_SIZE = 1.8;
 const float MAX_ALPHA = 0.75;
 // particle length modifier
 const float STRETCH_MOD = 0.3;
+// the max length of a wind streak
+const float MAX_LENGTH = 150.0;
 
 // The texture to serve as the mask for these particles
 uniform sampler2D mask_tex;
@@ -26,7 +28,7 @@ void vertex() {
 	float base_size = mix(MIN_SIZE, MAX_SIZE, z);
 
 	// stretch the particles making them at least 1.0 unit long
-	float stretch = 1.0 + wind_speed * STRETCH_MOD;
+	float stretch = min(1.0 + wind_speed * STRETCH_MOD, MAX_LENGTH);
 
 	// scale in local space
 	VERTEX.x *= base_size * stretch; // along wind

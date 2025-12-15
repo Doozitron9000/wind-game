@@ -104,10 +104,13 @@ tile_set = ExtResource("10_4n8tn")
 
 [node name="WindZone" parent="." instance=ExtResource("11_wkb0e")]
 position = Vector2(952, -288)
-wind = Vector2(-300, 0)
-particles_per_1000px2 = 0.02
+wind = Vector2(-10000, 0)
 
 [node name="Collision" parent="WindZone" index="0"]
 polygon = PackedVector2Array(200, -216, -312, -288, -648, -288, -632, -216, -512, -208, -512, 8, 200, 32)
+
+[node name="WindZone2" parent="." instance=ExtResource("11_wkb0e")]
+position = Vector2(656, -192)
+wind = Vector2(-3000, 0)
 
 [editable path="WindZone"]
