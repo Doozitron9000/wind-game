@@ -77,6 +77,9 @@ func recalculate_wind(body: Node2D) -> void:
 	for v in body.winds.values():
 		total += v
 	body.total_wind = total
+	# calculate wind strength here since it is relatively expensive
+	# and so we want to avoid doing it every frame
+	body.wind_strength = total.length()
 			
 ## gets the bounding box of the wind zone
 func get_global_bounds() -> Rect2:
