@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://chudyybn3l1rq"]
+
+[ext_resource type="Script" uid="uid://cdkm343s1maxo" path="res://ui/scripts/hud.gd" id="1_rbyyf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_276te"]
+bg_color = Color(0.71482426, 0.58876395, 1.92523e-07, 1)
+
+[node name="Hud" type="CanvasLayer"]
+script = ExtResource("1_rbyyf")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -40.0
+offset_right = 40.0
+grow_vertical = 0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="StaminaBar" type="ProgressBar" parent="MarginContainer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_276te")
+value = 77.02
