@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://couekb68vrmn6"]
+[gd_scene load_steps=5 format=3 uid="uid://couekb68vrmn6"]
 
 [ext_resource type="Script" uid="uid://cnc7w4f7unuyw" path="res://player/scripts/player.gd" id="1_oul6g"]
+[ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="2_rkbax"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)
@@ -30,5 +31,8 @@ collision_mask = 4
 [node name="SpikeCollision" type="CollisionShape2D" parent="SpikeDetection"]
 position = Vector2(0.003227234, -23.999775)
 shape = SubResource("RectangleShape2D_oul6g")
+
+[node name="Hud" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_rkbax")]
+player = NodePath("..")
 
 [connection signal="body_entered" from="SpikeDetection" to="." method="_on_spike_detection_body_entered"]

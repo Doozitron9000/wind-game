@@ -1,5 +1,5 @@
 extends CharacterBody2D
-
+class_name Player
 
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
@@ -127,8 +127,6 @@ func movement(delta: float) -> void:
 			stamina_drained = true
 	else:
 		recover_stamina(delta)
-	#print the stamina debug output
-	print(stamina)
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
