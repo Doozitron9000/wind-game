@@ -92,6 +92,7 @@ func movement(delta: float) -> void:
 				stamina_spent = true
 		else:
 			velocity.y += gravity * delta
+			anim_graph.airborne(velocity)
 		# and our move target should be reduced to our air control
 		move_target.x += input_dir * current_speed * AIR_CONTROL
 		# our speed change in mid air should default to its base line

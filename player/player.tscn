@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://couekb68vrmn6"]
+[gd_scene load_steps=25 format=3 uid="uid://couekb68vrmn6"]
 
 [ext_resource type="Script" uid="uid://cnc7w4f7unuyw" path="res://player/scripts/player.gd" id="1_oul6g"]
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
@@ -10,9 +10,37 @@ size = Vector2(16, 48)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_oul6g"]
 size = Vector2(16.596413, 48.501106)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_rkbax"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_tqiix"]
 atlas = ExtResource("2_rkbax")
-region = Rect2(256, 0, 128, 128)
+region = Rect2(0, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e7oew"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(128, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_c35mf"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(256, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_65viv"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(384, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_yllr7"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(256, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kb6p2"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(384, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wodsf"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(512, 128, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_32hag"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(640, 128, 128, 128)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g1dw6"]
 atlas = ExtResource("2_rkbax")
@@ -58,11 +86,37 @@ region = Rect2(128, 128, 128, 128)
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_rkbax")
+"texture": SubResource("AtlasTexture_tqiix")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e7oew")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c35mf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_65viv")
+}],
+"loop": true,
+"name": &"Fall",
+"speed": 4.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_yllr7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kb6p2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wodsf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_32hag")
 }],
 "loop": true,
 "name": &"Idle",
-"speed": 5.0
+"speed": 3.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -122,7 +176,8 @@ shape = SubResource("RectangleShape2D_oul6g")
 position = Vector2(0, -24)
 scale = Vector2(0.3828125, 0.3828125)
 sprite_frames = SubResource("SpriteFrames_yllr7")
-animation = &"Run"
+animation = &"Fall"
+frame_progress = 0.041930143
 script = ExtResource("3_g1dw6")
 
 [connection signal="body_entered" from="SpikeDetection" to="." method="_on_spike_detection_body_entered"]
