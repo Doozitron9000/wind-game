@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
 # how rate at which the player can speed up and slow down while grounded
@@ -38,6 +37,9 @@ var stamina_drained: bool = false # whether the player's stamina is drained
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
 
+# the class responsible for handling the player's animation
+@onready var anim_graph := $AnimatedSprite2D
+
 # every physics tick update the player's movement
 func _physics_process(delta: float) -> void:
 	movement(delta)
@@ -72,6 +74,8 @@ func movement(delta: float) -> void:
 		move_target += total_wind * TRACTION
 		# so our move target is just our speed * our input direction
 		move_target.x += input_dir * current_speed
+		# play the run animation or idle if not moving
+		anim_graph.grounded(input_dir)
 	# if we aren't on the floor gravity should be applied
 	else:
 		# if we are in the air the full wind force should act on us
