@@ -12,7 +12,7 @@ const SPEED : float = 500.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
 # how much faster the player runs while sprinting
-const SPRINT_MULTIPLIER: float = 1.0
+const SPRINT_MULTIPLIER: float = 1.5
 # The max speed at which the player can slide down wall while gripping
 const WALL_SLIDE : float = 200.0
 # The stamina cost of sprinting per second
@@ -58,11 +58,14 @@ func movement(delta: float) -> void:
 	var stamina_spent : bool = false
 	# Determine our current speed and sprint status
 	var current_speed : float = SPEED
+	# bool to track if we are sprinting
+	var sprinting : bool = false
 	if Input.is_action_pressed("sprint"):
 		if stamina > 0 and stamina_drained == false:
 			current_speed *= SPRINT_MULTIPLIER
 			stamina -= SPRINT_COST * delta
 			stamina_spent = true
+			sprinting = true
 	# get the player's movement axis
 	# this returns a value between -1 and 1 where -1 is maximally leftward and
 	# 1 is maximally rightward
@@ -80,7 +83,7 @@ func movement(delta: float) -> void:
 		# so our move target is just our speed * our input direction
 		move_target.x += input_dir * current_speed
 		# play the run animation or idle if not moving
-		anim_graph.grounded(input_dir)
+		anim_graph.grounded(input_dir, sprinting)
 	# if we aren't on the floor gravity should be applied
 	else:
 		# if we are in the air the full wind force should act on us

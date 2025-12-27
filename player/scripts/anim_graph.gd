@@ -3,13 +3,16 @@ extends AnimatedSprite2D
 var transition := false
 
 ## play grounded animations
-func grounded(input_dir : float) -> void:
+func grounded(input_dir : float, sprinting : bool) -> void:
 	# if we are mid transition just return
 	if transition: return
 	if (input_dir == 0.0):
 		play("Idle")
 	else:
-		play("Run")
+		if sprinting:
+			play("Sprint")
+		else:
+			play("Run")
 		# flip the sprite if going right
 		if (input_dir > 0):
 			flip_h = true
