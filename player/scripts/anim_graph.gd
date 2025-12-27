@@ -1,13 +1,24 @@
 extends AnimatedSprite2D
 # bool to track if we are currently in a transition animation
 var transition := false
+# bool to track if the player is currently on all fours
+var all_fours := false
 
 ## play grounded animations
 func grounded(input_dir : float, sprinting : bool) -> void:
+	# check if the player should standup or sit down
+	if all_fours != sprinting:
+		# if we needa change stance do so and return
+		change_stance(input_dir)
+		return
 	# if we are mid transition just return
 	if transition: return
 	if (input_dir == 0.0):
-		play("Idle")
+		# if on all fours play the all fours idle
+		if all_fours:
+			play("Quad_Idle")
+		else:
+			play("Idle")
 	else:
 		if sprinting:
 			play("Sprint")
@@ -58,3 +69,22 @@ func vert_wall_jump() -> void:
 func _on_animation_finished() -> void:
 	# we have always finished our jump animation if this is hit
 	transition = false
+
+## play the change stance animation
+func change_stance(input_dir : float) -> void:
+	if all_fours:
+		play_backwards("Drop")
+		all_fours = false
+	else:
+		play("Drop")
+		all_fours = true
+	# we are now transitioning
+	transition = true
+	# don't worry about flipping if not going in a direction
+	if input_dir == 0:
+		return
+	# flip the sprite if going right
+	if (input_dir > 0):
+		flip_h = true
+	else:
+		flip_h = false
