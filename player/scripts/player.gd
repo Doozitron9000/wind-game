@@ -125,6 +125,8 @@ func movement(delta: float) -> void:
 				velocity += jump_direction * JUMP_VELOCITY * -1
 				stamina -= wall_jump_stamina
 				stamina_spent = true
+				# play the jump animation
+			anim_graph.wall_jump()
 			
 	
 	# now check if stamina has been spent. If not recharge stamina. If so,

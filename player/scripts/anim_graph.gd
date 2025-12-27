@@ -1,9 +1,11 @@
 extends AnimatedSprite2D
-# bool to track if we are currently in a jump animaton
-var jumping := false
+# bool to track if we are currently in a transition animation
+var transition := false
 
 ## play grounded animations
 func grounded(input_dir : float) -> void:
+	# if we are mid transition just return
+	if transition: return
 	if (input_dir == 0.0):
 		play("Idle")
 	else:
@@ -16,8 +18,8 @@ func grounded(input_dir : float) -> void:
 
 ## play airborne animations.
 func airborne(character_velocity : Vector2) -> void:
-	# if we are mid jump just return
-	if jumping: return
+	# if we are mid transition just return
+	if transition: return
 	# otherwise play the fall animation
 	play("Fall")
 	var move_x : float = character_velocity.x
@@ -28,12 +30,17 @@ func airborne(character_velocity : Vector2) -> void:
 		else:
 			flip_h = false
 
-## trigger a jump
+## Play the jump animation
 func jump() -> void:
 	play("Jump")
-	jumping = true
+	transition = true
+
+## play the wall jump animation
+func wall_jump() -> void:
+	play("Wall_Jump")
+	transition = true
 
 ## to run when an animation finishes.
 func _on_animation_finished() -> void:
 	# we have always finished our jump animation if this is hit
-	jumping = false
+	transition = false

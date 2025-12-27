@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://couekb68vrmn6"]
+[gd_scene load_steps=39 format=3 uid="uid://couekb68vrmn6"]
 
 [ext_resource type="Script" uid="uid://cnc7w4f7unuyw" path="res://player/scripts/player.gd" id="1_oul6g"]
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
@@ -102,6 +102,42 @@ region = Rect2(0, 128, 128, 128)
 atlas = ExtResource("2_rkbax")
 region = Rect2(128, 128, 128, 128)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_7pqkx"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(0, 512, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uw77l"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(128, 512, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rptt4"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(256, 512, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7pn3"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(384, 512, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b8hi5"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(512, 512, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2uvqg"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(512, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1s1yo"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(640, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ejfk"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(768, 384, 128, 128)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jd2rm"]
+atlas = ExtResource("2_rkbax")
+region = Rect2(896, 384, 128, 128)
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_yllr7"]
 animations = [{
 "frames": [{
@@ -192,6 +228,43 @@ animations = [{
 "loop": true,
 "name": &"Run",
 "speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7pqkx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uw77l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rptt4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7pn3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b8hi5")
+}],
+"loop": false,
+"name": &"Wall_Jump",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2uvqg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1s1yo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5ejfk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jd2rm")
+}],
+"loop": true,
+"name": &"Wall_Slide",
+"speed": 3.0
 }]
 
 [node name="Player" type="CharacterBody2D" groups=["wind_affected"]]
