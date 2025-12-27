@@ -108,6 +108,8 @@ func movement(delta: float) -> void:
 		# if the player is ont he floor they can always jump
 		if is_on_floor():
 			velocity.y = JUMP_VELOCITY
+			# play the jump animation
+			anim_graph.jump()
 		# otherwise if they are pushing against a wall they can
 		# wall jump but their velocity should push them away
 		# from the wall. This should also require stamina
