@@ -30,6 +30,12 @@ func airborne(character_velocity : Vector2) -> void:
 		else:
 			flip_h = false
 
+## Play wall slide animation
+func wall_sliding() -> void:
+	# if we are mid transition just return
+	if transition: return
+	play("Wall_Slide")
+
 ## Play the jump animation
 func jump() -> void:
 	play("Jump")

@@ -95,6 +95,8 @@ func movement(delta: float) -> void:
 				velocity.y = WALL_SLIDE
 				stamina -= GRIP_COST * delta
 				stamina_spent = true
+				# play the wall slide animation
+				anim_graph.wall_sliding()
 		else:
 			velocity.y += gravity * delta
 			anim_graph.airborne(velocity)
