@@ -45,6 +45,11 @@ func jump() -> void:
 func wall_jump() -> void:
 	play("Wall_Jump")
 	transition = true
+	
+## play the vert wall jump animation
+func vert_wall_jump() -> void:
+	play("Wall_Jump_Vert")
+	transition = true
 
 ## to run when an animation finishes.
 func _on_animation_finished() -> void:

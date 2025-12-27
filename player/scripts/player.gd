@@ -125,6 +125,8 @@ func movement(delta: float) -> void:
 				# if we are holding up we should jump straight up the wall
 				if Input.is_action_pressed("up"):
 					velocity.y = JUMP_VELOCITY * CLIMB_MOD
+					# play the jump animation
+					anim_graph.vert_wall_jump()
 				# otherwise we should spring off the wall
 				else:
 					# so find the opposite direction of the wall we 
@@ -135,11 +137,10 @@ func movement(delta: float) -> void:
 					var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
 					# now apply the jump velocity
 					velocity += jump_direction * JUMP_VELOCITY * -1
+					# play the jump animation
+					anim_graph.wall_jump()
 				stamina -= wall_jump_stamina
 				stamina_spent = true
-				# play the jump animation
-			anim_graph.wall_jump()
-			
 	
 	# now check if stamina has been spent. If not recharge stamina. If so,
 	# check if we should now enter the drained state
