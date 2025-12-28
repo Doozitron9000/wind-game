@@ -31,6 +31,8 @@ const CLIMB_MOD : float = 0.5
 var winds : Dictionary = {}
 # the total wind force currently applying to this object
 var total_wind : Vector2 = Vector2.ZERO
+# the strength of the currently applied wind
+var wind_strength : float = 0.0
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -154,6 +156,10 @@ func movement(delta: float) -> void:
 		recover_stamina(delta)
 	#print the stamina debug output
 	print(stamina)
+	# if we are moving in the same direction as the wind we should also
+	# have the wind spped added to our speed change
+	if total_wind.dot(move_target) > 0:
+			speed_change += wind_strength * WIND_ACCEL
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
