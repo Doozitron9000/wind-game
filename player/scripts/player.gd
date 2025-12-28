@@ -22,11 +22,16 @@ const SPRINT_COST : float = 30.0
 const GRIP_COST : float = 15.0
 # The fraction of wind applied when the player is grounded
 const TRACTION : float = 0.5
+# How much wind speed should be added to acceleration when pushing towards
+# The player
+const WIND_ACCEL : float = 1.0
 
 # A dictionary of winds currently affecting the player keyed to the source id
 var winds : Dictionary = {}
 # the total wind force currently applying to this object
 var total_wind : Vector2 = Vector2.ZERO
+# the strength of the currently applied wind
+var wind_strength : float = 0.0
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -127,6 +132,12 @@ func movement(delta: float) -> void:
 			stamina_drained = true
 	else:
 		recover_stamina(delta)
+
+	# if we are moving in the same direction as the wind we should also
+	# have the wind spped added to our speed change
+	if total_wind.dot(move_target) > 0:
+			speed_change += wind_strength * WIND_ACCEL
+
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character

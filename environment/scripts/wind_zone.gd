@@ -14,6 +14,9 @@ extends Area2D
 const BASE_SPEED : float = 100.0
 # TEMP PADDING CONSTANT TO BE REPLACED LATER
 const PADDING : float = 20.0
+# the max and min wind particle density as a propotion of the base density
+const MAX_DENSITY : float = 2.0
+const MIN_DENSITY : float = 0.1
 
 # get the multimesh instance responsible for the wind particles
 @onready var particles : MultiMeshInstance2D = $Collision/Particles
@@ -42,10 +45,14 @@ var wind_speed : float
 		wind = value
 		wind_speed = wind.length()
 # the base number of particles per 1000 square pixels
-@export var particles_per_1000px2 : float = 1.0
+@export var particles_per_10000px2 : float = 1.0
 
 func _ready() -> void:
 	set_mask()
+	# Ensure this instance owns its GPU resources. If we don't
+	# do this, we can only display one windzone per level
+	particles.multimesh = particles.multimesh.duplicate()
+	particles.material = particles.material.duplicate()
 
 ## When a body enters this it has the wind applied to it
 ## if applicable
@@ -70,6 +77,9 @@ func recalculate_wind(body: Node2D) -> void:
 	for v in body.winds.values():
 		total += v
 	body.total_wind = total
+	# calculate wind strength here since it is relatively expensive
+	# and so we want to avoid doing it every frame
+	body.wind_strength = total.length()
 			
 ## gets the bounding box of the wind zone
 func get_global_bounds() -> Rect2:
@@ -147,8 +157,8 @@ func get_particle_count() -> int:
 	# calculate the number of particles based on the global bounds
 	var padded_bounds : Rect2 = get_padded_bounds()
 	var area = padded_bounds.size.x * padded_bounds.size.y
-	var count : float = (area * (particles_per_1000px2 / 1000.0) *
-						wind_speed / BASE_SPEED)
+	var count : float = (area * (particles_per_10000px2 / 10000.0) *
+				max(min(wind_speed / BASE_SPEED, MAX_DENSITY), MIN_DENSITY))
 	# limit us to having at least on particle and round to nearest rather
 	# than down
 	return max(1, int(round(count)))
