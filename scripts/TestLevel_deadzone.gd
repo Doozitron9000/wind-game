@@ -7,6 +7,4 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
-		body.global_position = respawn_point.global_position
-		body.velocity = Vector2.ZERO  # stop leftover motion
-		print("Player died!")
+		body.respawn()

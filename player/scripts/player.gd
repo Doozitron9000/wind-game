@@ -1,5 +1,6 @@
 extends CharacterBody2D
 
+
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
 # how rate at which the player can speed up and slow down while grounded
@@ -31,6 +32,8 @@ const CLIMB_MOD : float = 0.5
 var winds : Dictionary = {}
 # the total wind force currently applying to this object
 var total_wind : Vector2 = Vector2.ZERO
+# the strength of the currently applied wind
+var wind_strength : float = 0.0
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -38,6 +41,9 @@ var wall_jump_stamina: float = 20.0
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var stamina := 100.0 # the player's current stamina
 var stamina_drained: bool = false # whether the player's stamina is drained
+
+# A Node2D where the player will respawn
+@export var respawn_point : Node2D
 
 # every physics tick update the player's movement
 func _physics_process(delta: float) -> void:
@@ -135,6 +141,10 @@ func movement(delta: float) -> void:
 		recover_stamina(delta)
 	#print the stamina debug output
 	print(stamina)
+	# if we are moving in the same direction as the wind we should also
+	# have the wind spped added to our speed change
+	if total_wind.dot(move_target) > 0:
+			speed_change += wind_strength * WIND_ACCEL
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
@@ -147,3 +157,12 @@ func recover_stamina(delta: float) -> void:
 	# drained
 	if stamina >= 70:
 		stamina_drained = false
+		
+func respawn() -> void:
+	global_position = respawn_point.global_position
+	velocity = Vector2.ZERO
+	print("Player died!")
+
+
+func _on_spike_detection_body_entered(body: Node2D) -> void:
+	respawn()

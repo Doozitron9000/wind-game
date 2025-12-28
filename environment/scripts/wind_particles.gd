@@ -3,7 +3,7 @@ extends MultiMeshInstance2D
 # the maximum distance a particle can be from the viewer
 const MAX_Z : float = 0.5
 # how fast particles should move relative tot he wind vector
-const SPEED_MODIFIER : float = 1.5
+const SPEED_MODIFIER : float = 1.0
 
 # The bounding box of the wind zone in global space
 var padded_bounds : Rect2
