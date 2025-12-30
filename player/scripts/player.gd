@@ -28,6 +28,9 @@ const TRACTION : float = 0.5
 const WIND_ACCEL : float = 1.0
 # how high the played can jump straight up walls while sliding down them
 const CLIMB_MOD : float = 0.5
+# the maximum speed a player can be falling at before gravity stops applying
+# (in pps)
+const TERMINAL_VELOCITY : float = 2000
 
 # A dictionary of winds currently affecting the player keyed to the source id
 var winds : Dictionary = {}
@@ -42,6 +45,10 @@ var wall_jump_stamina: float = 20.0
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var stamina := 100.0 # the player's current stamina
 var stamina_drained: bool = false # whether the player's stamina is drained
+var umbrella_open: bool = false # whether the umbrella is being used
+# the percentage by which the umbrella reduces gravity and magnifies wind
+var umbrella_strength: float = 0.5
+var umbreall_terminal_velocity: float = 0.1
 
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
@@ -49,9 +56,13 @@ var stamina_drained: bool = false # whether the player's stamina is drained
 # the class responsible for handling the player's animation
 @onready var anim_graph := $AnimatedSprite2D
 
+# the umbrella visual
+@onready var umbrella := $FaceCursor/Umbrella
+
 # every physics tick update the player's movement
 func _physics_process(delta: float) -> void:
 	movement(delta)
+	tools()
 
 ## Handle the player's movement for this tick
 ## [param delta] is the time (in seconds) since this was last called
@@ -90,6 +101,30 @@ func movement(delta: float) -> void:
 		anim_graph.grounded(input_dir, sprinting)
 	# if we aren't on the floor gravity should be applied
 	else:
+		# a value to represent the effective gravity the player is currently
+		# under as well as effective terminal velocity
+		var effective_gravity = gravity
+		var effective_terminal_velocity = TERMINAL_VELOCITY
+		# if the umbrella is open it should potentially affect the above
+		# two values
+		if umbrella_open:
+			# get the gravity direction (just down for now
+			var grav_dir: Vector2 = Vector2.DOWN
+			# see how much our gravity lines up with our umbrella direction
+			var umbrella_dir = Vector2.DOWN.rotated(umbrella.global_rotation)
+			var alignment = umbrella_dir.dot(grav_dir)
+			# if this is a negative number it means the gravity is facing
+			# opposite the direction of gravity and so should slow our fall...
+			# this should all only apply if we are moving down, otherwise
+			# jump height etc will be magnified
+			if alignment < 0 && velocity.y > 0:
+				# lets see exactly how aligned we are..... our vectors should
+				# already by normalised so our current alignment is already a
+				# scalar reflecting how (un)aligned we are
+				var grav_scalar : float = 1-abs(alignment)*umbrella_strength
+				var tv_scalar : float = 1-abs(alignment)*umbreall_terminal_velocity
+				effective_gravity *= grav_scalar
+				effective_terminal_velocity *= tv_scalar
 		# if we are in the air the full wind force should act on us
 		move_target += total_wind
 		# next apply gravity accounting for wall slide
@@ -105,7 +140,10 @@ func movement(delta: float) -> void:
 				# play the wall slide animation
 				anim_graph.wall_sliding()
 		else:
-			velocity.y += gravity * delta
+			velocity.y += effective_gravity * delta
+			# clamp y velocity at terminal velocity
+			velocity.y = min(velocity.y, effective_terminal_velocity)
+			
 			anim_graph.airborne(velocity)
 		# and our move target should be reduced to our air control
 		move_target.x += input_dir * current_speed * AIR_CONTROL
@@ -184,6 +222,15 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	print("Player died!")
 
-
 func _on_spike_detection_body_entered(body: Node2D) -> void:
 	respawn()
+
+## manage the use of tools and equipment
+func tools() -> void:
+	# if the tool_1 button is pressed open the umbrella otherwise close it
+	if Input.is_action_pressed("tool_1"):
+		umbrella.visible = true
+		umbrella_open = true
+	else:
+		umbrella.visible = false
+		umbrella_open = false
