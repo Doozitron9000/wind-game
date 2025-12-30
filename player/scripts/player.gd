@@ -25,6 +25,8 @@ const TRACTION : float = 0.5
 # How much wind speed should be added to acceleration when pushing towards
 # The player
 const WIND_ACCEL : float = 1.0
+# how high the played can jump straight up walls while sliding down them
+const CLIMB_MOD : float = 0.5
 
 # A dictionary of winds currently affecting the player keyed to the source id
 var winds : Dictionary = {}
@@ -113,14 +115,19 @@ func movement(delta: float) -> void:
 		# from the wall. This should also require stamina
 		elif is_on_wall():
 			if !stamina_drained && stamina >= wall_jump_stamina:
-				# so find the opposite direction of the wall we 
-				# just touched
-				var wall_normal : Vector2 = get_wall_normal()
-				# we want to jump up a bit so find the vector half way between
-				# up and the wall we just hit and jump that way
-				var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
-				# now apply the jump velocity
-				velocity += jump_direction * JUMP_VELOCITY * -1
+				# if we are holding up we should jump straight up the wall
+				if Input.is_action_pressed("up"):
+					velocity.y = JUMP_VELOCITY * CLIMB_MOD
+				# otherwise we should spring off the wall
+				else:
+					# so find the opposite direction of the wall we 
+					# just touched
+					var wall_normal : Vector2 = get_wall_normal()
+					# we want to jump up a bit so find the vector half way between
+					# up and the wall we just hit and jump that way
+					var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
+					# now apply the jump velocity
+					velocity += jump_direction * JUMP_VELOCITY * -1
 				stamina -= wall_jump_stamina
 				stamina_spent = true
 			
