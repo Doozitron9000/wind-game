@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+class_name Player
+
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
 # how rate at which the player can speed up and slow down while grounded
@@ -130,8 +132,10 @@ func movement(delta: float) -> void:
 				# if we are holding up we should jump straight up the wall
 				if Input.is_action_pressed("up"):
 					velocity.y = JUMP_VELOCITY * CLIMB_MOD
+
 					# play the jump animation
 					anim_graph.vert_wall_jump()
+
 				# otherwise we should spring off the wall
 				else:
 					# so find the opposite direction of the wall we 
@@ -142,8 +146,10 @@ func movement(delta: float) -> void:
 					var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
 					# now apply the jump velocity
 					velocity += jump_direction * JUMP_VELOCITY * -1
+
 					# play the jump animation
 					anim_graph.wall_jump()
+
 				stamina -= wall_jump_stamina
 				stamina_spent = true
 	
@@ -154,12 +160,12 @@ func movement(delta: float) -> void:
 			stamina_drained = true
 	else:
 		recover_stamina(delta)
-	#print the stamina debug output
-	print(stamina)
+
 	# if we are moving in the same direction as the wind we should also
 	# have the wind spped added to our speed change
 	if total_wind.dot(move_target) > 0:
 			speed_change += wind_strength * WIND_ACCEL
+
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
