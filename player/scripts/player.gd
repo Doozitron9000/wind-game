@@ -1,4 +1,5 @@
 extends CharacterBody2D
+
 class_name Player
 
 # the amount of control the player has while in the air
@@ -13,7 +14,7 @@ const SPEED : float = 500.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
 # how much faster the player runs while sprinting
-const SPRINT_MULTIPLIER: float = 1.0
+const SPRINT_MULTIPLIER: float = 1.5
 # The max speed at which the player can slide down wall while gripping
 const WALL_SLIDE : float = 200.0
 # The stamina cost of sprinting per second
@@ -45,6 +46,9 @@ var stamina_drained: bool = false # whether the player's stamina is drained
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
 
+# the class responsible for handling the player's animation
+@onready var anim_graph := $AnimatedSprite2D
+
 # every physics tick update the player's movement
 func _physics_process(delta: float) -> void:
 	movement(delta)
@@ -58,11 +62,14 @@ func movement(delta: float) -> void:
 	var stamina_spent : bool = false
 	# Determine our current speed and sprint status
 	var current_speed : float = SPEED
+	# bool to track if we are sprinting
+	var sprinting : bool = false
 	if Input.is_action_pressed("sprint"):
 		if stamina > 0 and stamina_drained == false:
 			current_speed *= SPRINT_MULTIPLIER
 			stamina -= SPRINT_COST * delta
 			stamina_spent = true
+			sprinting = true
 	# get the player's movement axis
 	# this returns a value between -1 and 1 where -1 is maximally leftward and
 	# 1 is maximally rightward
@@ -79,6 +86,8 @@ func movement(delta: float) -> void:
 		move_target += total_wind * TRACTION
 		# so our move target is just our speed * our input direction
 		move_target.x += input_dir * current_speed
+		# play the run animation or idle if not moving
+		anim_graph.grounded(input_dir, sprinting)
 	# if we aren't on the floor gravity should be applied
 	else:
 		# if we are in the air the full wind force should act on us
@@ -93,8 +102,11 @@ func movement(delta: float) -> void:
 				velocity.y = WALL_SLIDE
 				stamina -= GRIP_COST * delta
 				stamina_spent = true
+				# play the wall slide animation
+				anim_graph.wall_sliding()
 		else:
 			velocity.y += gravity * delta
+			anim_graph.airborne(velocity)
 		# and our move target should be reduced to our air control
 		move_target.x += input_dir * current_speed * AIR_CONTROL
 		# our speed change in mid air should default to its base line
@@ -110,6 +122,8 @@ func movement(delta: float) -> void:
 		# if the player is ont he floor they can always jump
 		if is_on_floor():
 			velocity.y = JUMP_VELOCITY
+			# play the jump animation
+			anim_graph.jump()
 		# otherwise if they are pushing against a wall they can
 		# wall jump but their velocity should push them away
 		# from the wall. This should also require stamina
@@ -118,6 +132,10 @@ func movement(delta: float) -> void:
 				# if we are holding up we should jump straight up the wall
 				if Input.is_action_pressed("up"):
 					velocity.y = JUMP_VELOCITY * CLIMB_MOD
+
+					# play the jump animation
+					anim_graph.vert_wall_jump()
+
 				# otherwise we should spring off the wall
 				else:
 					# so find the opposite direction of the wall we 
@@ -128,9 +146,12 @@ func movement(delta: float) -> void:
 					var jump_direction : Vector2 = (up_direction + wall_normal).normalized()
 					# now apply the jump velocity
 					velocity += jump_direction * JUMP_VELOCITY * -1
+
+					# play the jump animation
+					anim_graph.wall_jump()
+
 				stamina -= wall_jump_stamina
 				stamina_spent = true
-			
 	
 	# now check if stamina has been spent. If not recharge stamina. If so,
 	# check if we should now enter the drained state
