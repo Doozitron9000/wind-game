@@ -36,6 +36,9 @@ const TERMINAL_VELOCITY : float = 2000
 var winds : Dictionary = {}
 # the total wind force currently applying to this object
 var total_wind : Vector2 = Vector2.ZERO
+# a var to track the normalised wind direction. using a var here spares us
+# having to calculate this every frame
+var wind_direction : Vector2
 # the strength of the currently applied wind
 var wind_strength : float = 0.0
 
@@ -91,10 +94,23 @@ func movement(delta: float) -> void:
 	# we should also make a var to track how quickly we should 
 	# change speed this tick and default it to the standard acceleration
 	var speed_change : float = ACCELERATION
+	# we should use a var to track our effective wind
+	var effective_wind = total_wind
+	# if the umbrella is open we should check if it amplifies and redirects
+	# the wind at all
+	if umbrella_open:
+		var umbrella_dir = Vector2.DOWN.rotated(umbrella.global_rotation)
+		var alignment = umbrella_dir.dot(wind_direction)
+		# if the umbrella and wind align the wind should be amplified
+		if alignment > 0:
+			# get how much extra wind we should have
+			var extra_wind_strength = alignment * umbrella_strength * wind_strength
+			# this extra wind should be redirected by the umbrella
+			effective_wind += extra_wind_strength*umbrella_dir
 	# if we are on the floor we can move as normal
 	if is_on_floor():
 		# if we are on the floor we add a reduced total wind to ourselves
-		move_target += total_wind * TRACTION
+		move_target += effective_wind * TRACTION
 		# so our move target is just our speed * our input direction
 		move_target.x += input_dir * current_speed
 		# play the run animation or idle if not moving
@@ -126,7 +142,7 @@ func movement(delta: float) -> void:
 				effective_gravity *= grav_scalar
 				effective_terminal_velocity *= tv_scalar
 		# if we are in the air the full wind force should act on us
-		move_target += total_wind
+		move_target += effective_wind
 		# next apply gravity accounting for wall slide
 		# if we are pushing against a wall we should slide not fall.
 		# this should only apply if we are moving down tho otherwise
@@ -140,8 +156,23 @@ func movement(delta: float) -> void:
 				# play the wall slide animation
 				anim_graph.wall_sliding()
 		else:
-			velocity.y += effective_gravity * delta
+			# added wind y to effective gravity multiplied by its accel
+			# here wind is acting as a force not a target but i believe it should
+			# feel right if we mult my accel since our wind force is essentially
+			# magnitude*accel when used as a target i think.....?
+			# we need to make sure wind doesn't apply if we are matching or
+			# exceeding it but we can't clamp as that will neuter jumping
+			var updraft = effective_wind.y*WIND_ACCEL * delta;
+			# this here clamps upward wind forces such that they don't apply
+			# if the player is already moving at them............ this may make
+			# the umbrella less fun so may be worth disabling when it is active
+			if velocity.y <= effective_wind.y and updraft < 0:
+				updraft = 0.0
+			velocity.y += effective_gravity * delta + updraft
 			# clamp y velocity at terminal velocity
+			# NOTE at the moment a downward wind still can't make you
+			# fall faster than terminal velocity. I've not implmented
+			# this as i think it is exceedingly unlikely to come up
 			velocity.y = min(velocity.y, effective_terminal_velocity)
 			
 			anim_graph.airborne(velocity)
@@ -201,8 +232,8 @@ func movement(delta: float) -> void:
 
 	# if we are moving in the same direction as the wind we should also
 	# have the wind spped added to our speed change
-	if total_wind.dot(move_target) > 0:
-			speed_change += wind_strength * WIND_ACCEL
+	if effective_wind.dot(move_target) > 0:
+			speed_change += abs(effective_wind.x) * WIND_ACCEL
 
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
