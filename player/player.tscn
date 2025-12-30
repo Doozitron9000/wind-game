@@ -463,7 +463,7 @@ animation = &"Drop"
 frame = 1
 frame_progress = 0.9910982
 script = ExtResource("3_g1dw6")
-[node name="Hud" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_rkbax")]
+[node name="Hud" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_hud")]
 player = NodePath("..")
 
 [connection signal="body_entered" from="SpikeDetection" to="." method="_on_spike_detection_body_entered"]
