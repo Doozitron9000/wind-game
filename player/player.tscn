@@ -1,11 +1,9 @@
-[gd_scene load_steps=60 format=3 uid="uid://couekb68vrmn6"]
+[gd_scene load_steps=61 format=3 uid="uid://couekb68vrmn6"]
 
 [ext_resource type="Script" uid="uid://cnc7w4f7unuyw" path="res://player/scripts/player.gd" id="1_oul6g"]
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
 [ext_resource type="Script" uid="uid://bgbdbilfeucdd" path="res://player/scripts/anim_graph.gd" id="3_g1dw6"]
-
 [ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="4_hud"]
-
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)
@@ -444,9 +442,6 @@ script = ExtResource("1_oul6g")
 position = Vector2(0, -24)
 shape = SubResource("RectangleShape2D_kqu6x")
 
-[node name="Camera" type="Camera2D" parent="."]
-position = Vector2(0, -24)
-
 [node name="SpikeDetection" type="Area2D" parent="."]
 collision_layer = 4
 collision_mask = 4
@@ -463,6 +458,7 @@ animation = &"Drop"
 frame = 1
 frame_progress = 0.9910982
 script = ExtResource("3_g1dw6")
+
 [node name="Hud" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_hud")]
 player = NodePath("..")
 

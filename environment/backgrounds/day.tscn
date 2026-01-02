@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://botr62b7i1v8l"]
+
+[ext_resource type="Script" uid="uid://bytsgpwu6sm4q" path="res://environment/backgrounds/scripts/clouds.gd" id="1_a8d85"]
+
+[sub_resource type="Gradient" id="Gradient_xxrvh"]
+colors = PackedColorArray(0.6393252, 0.75604075, 0.91150945, 1, 0.40941238, 0.5822538, 0.8798579, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_g8csf"]
+gradient = SubResource("Gradient_xxrvh")
+width = 1920
+height = 1080
+fill_from = Vector2(0, 1)
+fill_to = Vector2(0, 0)
+
+[node name="Day" type="Node2D"]
+script = ExtResource("1_a8d85")
+
+[node name="ParallaxBackground" type="ParallaxBackground" parent="."]
+
+[node name="Background" type="Parallax2D" parent="ParallaxBackground"]
+scroll_scale = Vector2(0, 0)
+follow_viewport = false
+
+[node name="Background Gradient" type="Sprite2D" parent="ParallaxBackground/Background"]
+position = Vector2(576.00006, 324)
+scale = Vector2(0.6, 0.6000001)
+texture = SubResource("GradientTexture2D_g8csf")
+
+[node name="Nearest" type="Parallax2D" parent="ParallaxBackground"]
+scroll_scale = Vector2(0.1, 0.1)
+follow_viewport = false

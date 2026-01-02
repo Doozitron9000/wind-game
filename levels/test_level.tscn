@@ -1,16 +1,12 @@
-[gd_scene load_steps=14 format=4 uid="uid://dsd7tbnp5fwgt"]
+[gd_scene load_steps=10 format=4 uid="uid://dsd7tbnp5fwgt"]
 
 [ext_resource type="PackedScene" uid="uid://couekb68vrmn6" path="res://player/player.tscn" id="1_46lwt"]
+[ext_resource type="Script" uid="uid://dk3kpuju6dwt1" path="res://levels/scripts/level.gd" id="1_axl34"]
 [ext_resource type="Script" uid="uid://dka11c51g3we4" path="res://scripts/TestLevel_deadzone.gd" id="1_x25rp"]
-[ext_resource type="Texture2D" uid="uid://nmwmawpda5dp" path="res://assets/Clouds1.png" id="2_wndkh"]
-[ext_resource type="Texture2D" uid="uid://f4wb1syt3140" path="res://assets/Clouds2.png" id="3_ly3hx"]
-[ext_resource type="Texture2D" uid="uid://00kgy5kjf1pg" path="res://assets/Clouds5.png" id="4_4n8tn"]
-[ext_resource type="Texture2D" uid="uid://c6w50j2346prk" path="res://assets/Clouds4.png" id="5_wkb0e"]
-[ext_resource type="Texture2D" uid="uid://bokfelscjyjxl" path="res://assets/Clouds6.png" id="6_paa45"]
-[ext_resource type="Texture2D" uid="uid://62v7yjtwaqaf" path="res://assets/Clouds3.png" id="7_axl34"]
 [ext_resource type="TileSet" uid="uid://dd3ipq8r2ennf" path="res://assets/tiles/ground_tileset.tres" id="9_ly3hx"]
 [ext_resource type="TileSet" uid="uid://boxowphtbmd0o" path="res://assets/tiles/pipes.tres" id="10_4n8tn"]
 [ext_resource type="PackedScene" uid="uid://bm6vmups0um7u" path="res://environment/wind_zone.tscn" id="11_wkb0e"]
+[ext_resource type="PackedScene" uid="uid://botr62b7i1v8l" path="res://environment/backgrounds/day.tscn" id="12_paa45"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmgay"]
 size = Vector2(11741.25, 211)
@@ -18,7 +14,17 @@ size = Vector2(11741.25, 211)
 [sub_resource type="CircleShape2D" id="CircleShape2D_x25rp"]
 radius = 7.0
 
-[node name="TestLevel" type="Node2D"]
+[node name="TestLevel" type="Node2D" node_paths=PackedStringArray("player", "camera")]
+script = ExtResource("1_axl34")
+player = NodePath("Player")
+camera = NodePath("Camera")
+
+[node name="Day" parent="." instance=ExtResource("12_paa45")]
+cloud_density = 0.3
+wind_direction = Vector2(-1000, 0)
+camera_zone = Rect2(-1000, -1000, 2000, 2000)
+cloud_band_height = 300.0
+cloud_band_width = 500.0
 
 [node name="Deadzone" type="Area2D" parent="." node_paths=PackedStringArray("respawn_point")]
 script = ExtResource("1_x25rp")
@@ -27,59 +33,6 @@ respawn_point = NodePath("../RespawnPoint")
 [node name="Deadzone Collision" type="CollisionShape2D" parent="Deadzone"]
 position = Vector2(5361, 1254)
 shape = SubResource("RectangleShape2D_gmgay")
-
-[node name="Clouds1" type="Sprite2D" parent="Deadzone"]
-position = Vector2(-339, 754)
-scale = Vector2(6, 7.17)
-texture = ExtResource("2_wndkh")
-
-[node name="Clouds2" type="Sprite2D" parent="Deadzone"]
-position = Vector2(301.00003, 740.00006)
-scale = Vector2(6, 6.0850005)
-texture = ExtResource("3_ly3hx")
-
-[node name="Clouds5" type="Sprite2D" parent="Deadzone"]
-position = Vector2(1388, 772)
-scale = Vector2(6, 7.17)
-texture = ExtResource("4_4n8tn")
-
-[node name="Clouds4" type="Sprite2D" parent="Deadzone"]
-position = Vector2(4446, 632.99994)
-scale = Vector2(6, 7.17)
-texture = ExtResource("5_wkb0e")
-flip_h = true
-
-[node name="Clouds6" type="Sprite2D" parent="Deadzone"]
-position = Vector2(883.0001, 720)
-scale = Vector2(6, 7.17)
-texture = ExtResource("5_wkb0e")
-
-[node name="Clouds3" type="Sprite2D" parent="Deadzone"]
-position = Vector2(1811.0002, 832)
-scale = Vector2(6, 5.9311533)
-texture = ExtResource("3_ly3hx")
-flip_h = true
-
-[node name="Clouds7" type="Sprite2D" parent="Deadzone"]
-position = Vector2(2359, 754)
-scale = Vector2(6, 7.17)
-texture = ExtResource("6_paa45")
-
-[node name="Clouds8" type="Sprite2D" parent="Deadzone"]
-position = Vector2(2903, 761)
-scale = Vector2(6, 7.17)
-texture = ExtResource("4_4n8tn")
-flip_h = true
-
-[node name="Clouds9" type="Sprite2D" parent="Deadzone"]
-position = Vector2(3309.0005, 790)
-scale = Vector2(6, 7.17)
-texture = ExtResource("2_wndkh")
-
-[node name="Clouds10" type="Sprite2D" parent="Deadzone"]
-position = Vector2(3942.9998, 640)
-scale = Vector2(6, 7.17)
-texture = ExtResource("7_axl34")
 
 [node name="RespawnPoint" type="Node2D" parent="."]
 position = Vector2(146.23, -8)
@@ -104,13 +57,11 @@ tile_set = ExtResource("10_4n8tn")
 
 [node name="WindZone" parent="." instance=ExtResource("11_wkb0e")]
 position = Vector2(952, -288)
-wind = Vector2(-10000, 0)
+wind = Vector2(-1000, 0)
 
 [node name="Collision" parent="WindZone" index="0"]
-polygon = PackedVector2Array(200, -216, -312, -288, -648, -288, -632, -216, -512, -208, -512, 8, 200, 32)
+polygon = PackedVector2Array(200, -288, -640, -288, -640, -216, -512, -216, -512, 32, 200, 32)
 
-[node name="WindZone2" parent="." instance=ExtResource("11_wkb0e")]
-position = Vector2(656, -192)
-wind = Vector2(-3000, 0)
+[node name="Camera" type="Camera2D" parent="."]
 
 [editable path="WindZone"]
