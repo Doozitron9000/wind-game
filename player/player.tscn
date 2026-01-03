@@ -437,6 +437,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" groups=["wind_affected"]]
+collision_layer = 129
 script = ExtResource("1_oul6g")
 
 [node name="Collision" type="CollisionShape2D" parent="."]
