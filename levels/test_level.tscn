@@ -11,7 +11,7 @@
 [ext_resource type="TileSet" uid="uid://dd3ipq8r2ennf" path="res://assets/tiles/ground_tileset.tres" id="9_ly3hx"]
 [ext_resource type="TileSet" uid="uid://boxowphtbmd0o" path="res://assets/tiles/pipes.tres" id="10_4n8tn"]
 [ext_resource type="PackedScene" uid="uid://bm6vmups0um7u" path="res://environment/wind_zone.tscn" id="11_wkb0e"]
-[ext_resource type="PackedScene" uid="uid://chc1gwiv2v1by" path="res://equipment/rope.tscn" id="12_paa45"]
+[ext_resource type="PackedScene" uid="uid://chc1gwiv2v1by" path="res://interactable/rope/rope.tscn" id="12_paa45"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmgay"]
 size = Vector2(11741.25, 211)
@@ -87,7 +87,6 @@ position = Vector2(146.23, -8)
 
 [node name="Player" parent="." node_paths=PackedStringArray("respawn_point") groups=["player"] instance=ExtResource("1_46lwt")]
 position = Vector2(211, -59)
-collision_mask = 5
 respawn_point = NodePath("../RespawnPoint")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
@@ -111,7 +110,6 @@ wind = Vector2(-1000, 0)
 polygon = PackedVector2Array(200, -216, -312, -288, -648, -288, -632, -216, -512, -208, -512, 8, 200, 32)
 
 [node name="Rope" parent="." instance=ExtResource("12_paa45")]
-position = Vector2(-8.000015, -480)
-rotation = -0.4886922
+position = Vector2(632.00006, -495.99997)
 
 [editable path="WindZone"]

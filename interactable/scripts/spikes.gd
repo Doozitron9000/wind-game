@@ -1,7 +1,6 @@
-extends Interactable
+extends StaticBody2D
 
 # for now just respawn the player on interaction
-func interact(interactor : Node2D) -> void:
-	super(interactor)
-	if interactor is Player:
-		interactor.respawn()
+func affect(to_affect : Node2D) -> void:
+	if to_affect is Player:
+		to_affect.respawn()

@@ -1,6 +1,11 @@
 extends CharacterBody2D
-
 class_name Player
+
+# enum to track the player's state
+enum PlayerState {
+	DEFAULT,
+	CLIMBING
+}
 
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
@@ -11,6 +16,8 @@ const ACCELERATION := 5000.0
 const BASE_AIR_DECEL : float = 400.0
 # the player's max speed
 const SPEED : float = 500.0
+# the player's climb speed
+const CLIMB_SPEED : float = 200.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
 # how much faster the player runs while sprinting
@@ -41,7 +48,6 @@ var total_wind : Vector2 = Vector2.ZERO
 var wind_direction : Vector2
 # the strength of the currently applied wind
 var wind_strength : float = 0.0
-
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
 
@@ -51,7 +57,14 @@ var stamina_drained: bool = false # whether the player's stamina is drained
 var umbrella_open: bool = false # whether the umbrella is being used
 # the percentage by which the umbrella reduces gravity and magnifies wind
 var umbrella_strength: float = 0.5
-var umbreall_terminal_velocity: float = 0.1
+var umbrella_terminal_velocity: float = 0.1
+
+# the current object the player can interact with
+var interaction_target : Node2D = null
+# the player's current state
+var state : PlayerState = PlayerState.DEFAULT
+# the object the player is currently climbing
+var climbed : Node2D = null
 
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
@@ -62,11 +75,37 @@ var umbreall_terminal_velocity: float = 0.1
 # the umbrella visual
 @onready var umbrella := $FaceCursor/Umbrella
 
-# every physics tick update the player's movement
+## every physics tick update the player's movement and run their tools and
+## interaction
 func _physics_process(delta: float) -> void:
-	movement(delta)
+	# act based on the player's state
+	match state:
+		PlayerState.CLIMBING:
+			climbing(delta)
+		PlayerState.DEFAULT:
+			interaction()
+			movement(delta)
 	tools()
 
+## run the player's interaciton
+func interaction() -> void:
+	# if the player has something to interact with and jsut pressed intearct
+	# run the interaction
+	if interaction_target && Input.is_action_just_pressed("interact"):
+		interaction_target.interact(self)
+	
+## handle the player's movement while climbing	
+func climbing(delta: float) -> void:
+	# if the player just hit interact again stop climbing
+	if Input.is_action_just_pressed("interact"):
+		release_rope()
+		return
+		
+	# get the player's up/down and left/right axis
+	var vertical_dir = Input.get_axis("up", "down") * CLIMB_SPEED * delta
+	var horizontal_dir = Input.get_axis("left", "right")
+	climbed.climb(vertical_dir, horizontal_dir)
+	
 ## Handle the player's movement for this tick
 ## [param delta] is the time (in seconds) since this was last called
 func movement(delta: float) -> void:
@@ -138,7 +177,7 @@ func movement(delta: float) -> void:
 				# already by normalised so our current alignment is already a
 				# scalar reflecting how (un)aligned we are
 				var grav_scalar : float = 1-abs(alignment)*umbrella_strength
-				var tv_scalar : float = 1-abs(alignment)*umbreall_terminal_velocity
+				var tv_scalar : float = 1-abs(alignment)*umbrella_terminal_velocity
 				effective_gravity *= grav_scalar
 				effective_terminal_velocity *= tv_scalar
 		# if we are in the air the full wind force should act on us
@@ -253,9 +292,15 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	print("Player died!")
 
+## affector to run when a body enters the player's detection zone
+## everything on the layer that can trigger this (layer 3) MUST have a method
+## called affect that takes a Node2D........ since godot has no interfaces
+## this will have to suffice
 func _on_detector_body_entered(body: Node2D) -> void:
-	if body is Interactable:
-		body.interact(self)
+	# if the body is something that can affect the player have it do so.
+	# only affectors should be able to trigger this to begin with but this
+	# check serves as a contignecy
+	body.affect(self)
 
 ## manage the use of tools and equipment
 func tools() -> void:
@@ -266,3 +311,21 @@ func tools() -> void:
 	else:
 		umbrella.visible = false
 		umbrella_open = false
+
+## function to run when a body exits the player's detection zone
+## currently this function just returns the current interaction target
+## to null
+func _on_detector_body_exited(body: Node2D) -> void:
+	if body == interaction_target:
+		interaction_target = null
+
+# funciton to run when the player grabs a rope
+func grap_rope(to_climb : Node2D) -> void:
+	state = PlayerState.CLIMBING
+	climbed = to_climb
+	
+# funciton to run when the player releases a rope
+func release_rope() -> void:
+	state = PlayerState.DEFAULT
+	climbed.release()
+	climbed = null
