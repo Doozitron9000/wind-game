@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
 [ext_resource type="Script" uid="uid://bgbdbilfeucdd" path="res://player/scripts/anim_graph.gd" id="3_g1dw6"]
 [ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="4_hud"]
-[ext_resource type="Script" uid="uid://btodrwk22nut2" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
+[ext_resource type="Script" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)
@@ -446,11 +446,11 @@ shape = SubResource("RectangleShape2D_kqu6x")
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2(0, -24)
 
-[node name="SpikeDetection" type="Area2D" parent="."]
+[node name="Detector" type="Area2D" parent="."]
 collision_layer = 4
 collision_mask = 4
 
-[node name="SpikeCollision" type="CollisionShape2D" parent="SpikeDetection"]
+[node name="DetectorCollision" type="CollisionShape2D" parent="Detector"]
 position = Vector2(0.003227234, -23.999775)
 shape = SubResource("RectangleShape2D_oul6g")
 
@@ -477,5 +477,5 @@ rotation = -1.5707964
 scale = Vector2(1.0139353, 1.0185806)
 polygon = PackedVector2Array(-23.67015, 23.5622, 23.670149, 23.562202, 15.7801, 31.41627, -1.9073486e-06, 39.270336, -15.780101, 31.416267)
 
-[connection signal="body_entered" from="SpikeDetection" to="." method="_on_spike_detection_body_entered"]
+[connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="AnimatedSprite2D" method="_on_animation_finished"]

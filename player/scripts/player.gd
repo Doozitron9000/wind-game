@@ -253,8 +253,9 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	print("Player died!")
 
-func _on_spike_detection_body_entered(body: Node2D) -> void:
-	respawn()
+func _on_detector_body_entered(body: Node2D) -> void:
+	if body is Interactable:
+		body.interact(self)
 
 ## manage the use of tools and equipment
 func tools() -> void:

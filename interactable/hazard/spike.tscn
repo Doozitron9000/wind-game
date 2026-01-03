@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://drnrpodi0uirh"]
+
+[ext_resource type="Script" uid="uid://khmtqy8w5add" path="res://interactable/scripts/spikes.gd" id="1_b75jm"]
+[ext_resource type="Texture2D" uid="uid://bvnthclf46yxw" path="res://assets/tiles/temp_tiles.png" id="1_vm5yp"]
+
+[node name="Spike" type="StaticBody2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_b75jm")
+
+[node name="Visuals" type="Sprite2D" parent="."]
+texture = ExtResource("1_vm5yp")
+region_enabled = true
+region_rect = Rect2(176, 128, 16, 16)
+
+[node name="Collision" type="CollisionPolygon2D" parent="."]
+polygon = PackedVector2Array(0.45871735, -7.0825515, -2.3025093, 5.2648296, -5.532627, -2.1331797, -8, 8, 8, 8, 5.512287, -1.2996006, 3.1678467, 3.701869)
