@@ -1,4 +1,4 @@
-extends StaticBody2D
+extends Area2D
 
 # for now just respawn the player on interaction
 func affect(to_affect : Node2D) -> void:

@@ -1,10 +1,11 @@
-@tool
 class_name RopeSegment
 extends RigidBody2D
 
 # the amount of wind applied to this. I figure a rope should be less affected
 # by wind since it has a smaller sail area
 const WIND_FRACTION : float = 0.5
+# the mass in kg of this segment at a length of 64
+const MASS_64 : float = 1.0
 
 # the segment prior to this one in the rope chain
 @export var above_segment : PhysicsBody2D
@@ -46,6 +47,8 @@ func _ready() -> void:
 	# the regular collision is a capsule not a rect
 	regular_collision.position.y = mid_point
 	regular_collision.shape.height = length
+	# set the mass based on length
+	mass = length/64 * MASS_64
 	
 func set_above_segment(new_above_segment : PhysicsBody2D) -> void:
 	above_segment = new_above_segment
