@@ -4,13 +4,16 @@
 [ext_resource type="Script" uid="uid://du48wfsc6ikr0" path="res://interactable/scripts/rope/rope_interaction.gd" id="2_umqrb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mrry0"]
+resource_local_to_scene = true
 radius = 4.0
 height = 64.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_umqrb"]
+resource_local_to_scene = true
 size = Vector2(16, 64)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_83rwn"]
+resource_local_to_scene = true
 size = Vector2(80, 64)
 
 [node name="RopeSegment" type="RigidBody2D" groups=["wind_affected"]]

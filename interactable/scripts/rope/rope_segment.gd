@@ -1,3 +1,4 @@
+@tool
 class_name RopeSegment
 extends RigidBody2D
 
@@ -28,9 +29,26 @@ var climber_pos : Vector2 = Vector2.ZERO
 @onready var joint : PinJoint2D = $Joint
 @onready var expanded_collision := $ExpandedCollision
 @onready var regular_collision := $CollisionArea
+@onready var detection_collision := $DetectionArea/DetectionCollsion
+@onready var visuals := $ColorRect
 
-# on ready assign node b to the pin joint
+func setup(new_length : float) -> void:
+	length = new_length
+	
 func _ready() -> void:
+	var mid_point = length/2
+	# now set everything's size
+	visuals.size.y = length
+	detection_collision.shape.size.y = length
+	expanded_collision.shape.size.y = length
+	detection_collision.position.y = mid_point
+	expanded_collision.position.y = mid_point
+	# the regular collision is a capsule not a rect
+	regular_collision.position.y = mid_point
+	regular_collision.shape.height = length
+	
+func set_above_segment(new_above_segment : PhysicsBody2D) -> void:
+	above_segment = new_above_segment
 	joint.node_a = above_segment.get_path()
 
 # on process apply the wind

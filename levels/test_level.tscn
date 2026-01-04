@@ -28,7 +28,8 @@ position = Vector2(64, -1072)
 position = Vector2(688, -680)
 
 [node name="Rope3" parent="." instance=ExtResource("12_paa45")]
-position = Vector2(-56, -432)
+position = Vector2(-56, -504)
+segment_count = 6
 
 [node name="Deadzone" type="Area2D" parent="." node_paths=PackedStringArray("respawn_point")]
 script = ExtResource("1_x25rp")
