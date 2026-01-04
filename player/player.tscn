@@ -450,6 +450,7 @@ position = Vector2(0, -24)
 [node name="Detector" type="Area2D" parent="."]
 collision_layer = 0
 collision_mask = 4
+monitorable = false
 
 [node name="DetectorCollision" type="CollisionShape2D" parent="Detector"]
 position = Vector2(0.003227234, -23.999775)
@@ -459,9 +460,7 @@ shape = SubResource("RectangleShape2D_oul6g")
 position = Vector2(0, -24)
 scale = Vector2(0.3828125, 0.3828125)
 sprite_frames = SubResource("SpriteFrames_yllr7")
-animation = &"Drop"
-frame = 1
-frame_progress = 0.9910982
+animation = &"Idle"
 script = ExtResource("3_g1dw6")
 
 [node name="Hud" parent="." node_paths=PackedStringArray("player") instance=ExtResource("4_hud")]
@@ -478,6 +477,11 @@ rotation = -1.5707964
 scale = Vector2(1.0139353, 1.0185806)
 polygon = PackedVector2Array(-23.67015, 23.5622, 23.670149, 23.562202, 15.7801, 31.41627, -1.9073486e-06, 39.270336, -15.780101, 31.416267)
 
+[node name="GrabPoint" type="Node2D" parent="."]
+position = Vector2(0, -32)
+
+[connection signal="area_entered" from="Detector" to="." method="_on_detector_body_entered"]
+[connection signal="area_exited" from="Detector" to="." method="_on_detector_body_exited"]
 [connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
 [connection signal="body_exited" from="Detector" to="." method="_on_detector_body_exited"]
 [connection signal="animation_finished" from="AnimatedSprite2D" to="AnimatedSprite2D" method="_on_animation_finished"]

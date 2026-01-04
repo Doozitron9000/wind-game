@@ -1,24 +1,47 @@
-[gd_scene load_steps=3 format=3 uid="uid://dpyajld673t7x"]
+[gd_scene load_steps=6 format=3 uid="uid://dpyajld673t7x"]
 
-[ext_resource type="Script" uid="uid://cyx5raacawbx4" path="res://interactable/scripts/rope_segment.gd" id="1_a002i"]
+[ext_resource type="Script" uid="uid://cyx5raacawbx4" path="res://interactable/scripts/rope/rope_segment.gd" id="1_a002i"]
+[ext_resource type="Script" uid="uid://du48wfsc6ikr0" path="res://interactable/scripts/rope/rope_interaction.gd" id="2_umqrb"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mrry0"]
-radius = 8.0
+radius = 4.0
 height = 64.0
 
-[node name="RopeSegment" type="RigidBody2D" groups=["wind_affected"]]
-collision_layer = 132
-collision_mask = 0
-script = ExtResource("1_a002i")
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_umqrb"]
+size = Vector2(16, 64)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 32)
-shape = SubResource("CapsuleShape2D_mrry0")
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_83rwn"]
+size = Vector2(80, 64)
+
+[node name="RopeSegment" type="RigidBody2D" groups=["wind_affected"]]
+collision_layer = 130
+collision_mask = 2
+angular_damp = 7.0
+script = ExtResource("1_a002i")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 offset_left = -4.0
 offset_right = 4.0
 offset_bottom = 64.0
 
+[node name="CollisionArea" type="CollisionShape2D" parent="."]
+position = Vector2(0, 32)
+shape = SubResource("CapsuleShape2D_mrry0")
+
+[node name="ExpandedCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 32)
+shape = SubResource("RectangleShape2D_umqrb")
+disabled = true
+debug_color = Color(0.95971674, 0.07663352, 0.47241318, 0.41960785)
+
 [node name="Joint" type="PinJoint2D" parent="."]
 node_b = NodePath("..")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("2_umqrb")
+
+[node name="DetectionCollsion" type="CollisionShape2D" parent="DetectionArea"]
+position = Vector2(0, 32)
+shape = SubResource("RectangleShape2D_83rwn")

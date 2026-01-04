@@ -21,6 +21,15 @@ radius = 7.0
 
 [node name="TestLevel" type="Node2D"]
 
+[node name="Rope" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(64, -1072)
+
+[node name="Rope2" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(688, -680)
+
+[node name="Rope3" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(-56, -432)
+
 [node name="Deadzone" type="Area2D" parent="." node_paths=PackedStringArray("respawn_point")]
 script = ExtResource("1_x25rp")
 respawn_point = NodePath("../RespawnPoint")
@@ -108,8 +117,5 @@ wind = Vector2(-1000, 0)
 
 [node name="Collision" parent="WindZone" index="0"]
 polygon = PackedVector2Array(200, -216, -312, -288, -648, -288, -632, -216, -512, -208, -512, 8, 200, 32)
-
-[node name="Rope" parent="." instance=ExtResource("12_paa45")]
-position = Vector2(632.00006, -495.99997)
 
 [editable path="WindZone"]

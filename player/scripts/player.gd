@@ -20,6 +20,12 @@ const SPEED : float = 500.0
 const CLIMB_SPEED : float = 200.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
+# the amount velocity the always goes up when jumping of a rope
+const ROPE_JUMP_Y : float = 0.5
+# the max amount of force the player can apply to a rope by swinging themselves
+const SWING_FORCE : float = 200
+# the amount of swing force immediately applied if pushing off a wall
+const SWING_WALL_FORCE : float = 200.0
 # how much faster the player runs while sprinting
 const SPRINT_MULTIPLIER: float = 1.5
 # The max speed at which the player can slide down wall while gripping
@@ -75,6 +81,9 @@ var climbed : Node2D = null
 # the umbrella visual
 @onready var umbrella := $FaceCursor/Umbrella
 
+# the marker of the grab point (so shoulder height marker)
+@onready var grab_point := $GrabPoint
+
 ## every physics tick update the player's movement and run their tools and
 ## interaction
 func _physics_process(delta: float) -> void:
@@ -86,6 +95,8 @@ func _physics_process(delta: float) -> void:
 			interaction()
 			movement(delta)
 	tools()
+	# Move the character
+	move_and_slide()
 
 ## run the player's interaciton
 func interaction() -> void:
@@ -100,11 +111,37 @@ func climbing(delta: float) -> void:
 	if Input.is_action_just_pressed("interact"):
 		release_rope()
 		return
-		
+	# if the player just hit jump we should also release the 
+	# rope but in this case we should also launch of it
+	if Input.is_action_just_pressed("jump"):
+		# release first so we get the ropes velocity
+		release_rope()
+		# and now add the jump velocity by first getting the direction
+		# we pointing
+		var jump_dir := Input.get_vector("left", "right", "up", "down")
+		# jumping looks bad and feels bad if is just lateral so we should
+		# always jump up by some amount (defined by the rope jump mod)
+		# and then jump laterally by what is left
+		# remember jump velocity is -ve by default
+		var jump = jump_dir * JUMP_VELOCITY * (1-ROPE_JUMP_Y) * -1
+		jump.y += (ROPE_JUMP_Y * JUMP_VELOCITY)
+		velocity += jump
+		return
 	# get the player's up/down and left/right axis
-	var vertical_dir = Input.get_axis("up", "down") * CLIMB_SPEED * delta
-	var horizontal_dir = Input.get_axis("left", "right")
-	climbed.climb(vertical_dir, horizontal_dir)
+	var vertical_dir : float = Input.get_axis("up", "down")
+	var horizontal_dir : float = Input.get_axis("left", "right")
+	
+	var vertical_force := vertical_dir * CLIMB_SPEED * delta
+	var horizontal_force := horizontal_dir * CLIMB_SPEED * delta
+	# if we are against a wall we should amplify our swing if pushing off it
+	if is_on_wall():
+		var wall_normal : Vector2 = get_wall_normal()
+		# check if we are pushing off the wall
+		if wall_normal.dot(Vector2(horizontal_dir, 0.0)) > 0.0:
+			horizontal_force += SWING_WALL_FORCE*horizontal_dir
+	# rotate us to match the climbed object's rotation
+	global_rotation = climbed.global_rotation
+	climbed.climb(vertical_force, horizontal_force)
 	
 ## Handle the player's movement for this tick
 ## [param delta] is the time (in seconds) since this was last called
@@ -276,8 +313,7 @@ func movement(delta: float) -> void:
 
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
-	# Move the character
-	move_and_slide()
+	
 
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
@@ -323,9 +359,23 @@ func _on_detector_body_exited(body: Node2D) -> void:
 func grap_rope(to_climb : Node2D) -> void:
 	state = PlayerState.CLIMBING
 	climbed = to_climb
+	# we should apply our velocity to rope segment as an impulse then set it
+	# to zero so we don't go flying randomly on release'
+	climbed.apply_impulse(velocity)
+	velocity = Vector2.ZERO
 	
 # funciton to run when the player releases a rope
 func release_rope() -> void:
 	state = PlayerState.DEFAULT
+	# get the velocity we should have from the rope segment
+	var release_velocity : Vector2 = climbed.climber_velocity()
 	climbed.release()
 	climbed = null
+	# now apply the release velocity
+	velocity = release_velocity
+	# reset global rotation
+	global_rotation = 0.0
+
+## gets the current global position of the grab point
+func get_grab_pos() -> Vector2:
+	return grab_point.global_position
