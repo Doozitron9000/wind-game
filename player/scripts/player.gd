@@ -28,6 +28,8 @@ const TRACTION : float = 0.5
 const WIND_ACCEL : float = 1.0
 # how high the played can jump straight up walls while sliding down them
 const CLIMB_MOD : float = 0.5
+# how much time we ignore layer 4 when we try to drop down
+const DROP_TIME : float = 0.2
 
 # A dictionary of winds currently affecting the player keyed to the source id
 var winds : Dictionary = {}
@@ -35,6 +37,8 @@ var winds : Dictionary = {}
 var total_wind : Vector2 = Vector2.ZERO
 # the strength of the currently applied wind
 var wind_strength : float = 0.0
+# how much time we have been dropping down for
+var current_drop_time : float = 0	
 
 # a temporary var representing teh amount of stamina required to wall jump
 var wall_jump_stamina: float = 20.0
@@ -154,10 +158,14 @@ func movement(delta: float) -> void:
 				stamina_spent = true
 
 	#Dropdown through platforms
-	if Input.is_action_pressed("down"):
-		set_collision_mask_value(4, false) # If we're holding down we don't collide with layer 4 anymore
-	else:
-		set_collision_mask_value(4, true) # If we're not holding down it collides as normal and lets us sit on it
+	if Input.is_action_pressed("down") and is_on_floor():
+		set_collision_mask_value(4, false) # If we're press down we don't collide with layer 4 anymore
+		current_drop_time = DROP_TIME # Sets the time we will not collide with layer 4
+	
+	if current_drop_time > 0: # Checks if we have a currently running drop timer
+		current_drop_time -= delta # Counts down the drop timer
+		if current_drop_time <= 0: # If our last operation was the one that took us below 0 we know that the time has expired
+			set_collision_mask_value(4, true) # Once our drop time expires we turn collision with layer 4 back on
 		
 	# now check if stamina has been spent. If not recharge stamina. If so,
 	# check if we should now enter the drained state
@@ -176,7 +184,7 @@ func movement(delta: float) -> void:
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	# Move the character
 	move_and_slide()
-
+	
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
 	stamina = min(stamina + 20 * delta, 100)
