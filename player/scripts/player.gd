@@ -152,7 +152,13 @@ func movement(delta: float) -> void:
 
 				stamina -= wall_jump_stamina
 				stamina_spent = true
-	
+
+	#Dropdown through platforms
+	if Input.is_action_pressed("down"):
+		set_collision_mask_value(4, false) # If we're holding down we don't collide with layer 4 anymore
+	else:
+		set_collision_mask_value(4, true) # If we're not holding down it collides as normal and lets us sit on it
+		
 	# now check if stamina has been spent. If not recharge stamina. If so,
 	# check if we should now enter the drained state
 	if stamina_spent:
@@ -179,11 +185,12 @@ func recover_stamina(delta: float) -> void:
 	if stamina >= 70:
 		stamina_drained = false
 		
+# respawns the player at the current respawn point
 func respawn() -> void:
 	global_position = respawn_point.global_position
 	velocity = Vector2.ZERO
 	print("Player died!")
 
-
+# detects if spike is in the collision
 func _on_spike_detection_body_entered(body: Node2D) -> void:
 	respawn()
