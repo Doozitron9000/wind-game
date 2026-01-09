@@ -80,6 +80,7 @@ interact={
 2d_physics/layer_1="main"
 2d_physics/layer_2="ignore_creatures"
 2d_physics/layer_3="interactable"
+2d_physics/layer_4="dropdown platforms"
 2d_physics/layer_8="wind_affected"
 
 [physics]

@@ -97,6 +97,7 @@ position = Vector2(146.23, -8)
 
 [node name="Player" parent="." node_paths=PackedStringArray("respawn_point") groups=["player"] instance=ExtResource("1_46lwt")]
 position = Vector2(211, -59)
+collision_mask = 9
 respawn_point = NodePath("../RespawnPoint")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
