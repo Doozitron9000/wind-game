@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://chc1gwiv2v1by"]
+
+[ext_resource type="Script" uid="uid://cwkwf25qieixt" path="res://interactable/scripts/rope/rope.gd" id="1_ixoxy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hpeeh"]
+radius = 8.0
+
+[node name="Rope" type="Node2D"]
+script = ExtResource("1_ixoxy")
+
+[node name="Top" type="StaticBody2D" parent="."]
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Top"]
+shape = SubResource("CircleShape2D_hpeeh")

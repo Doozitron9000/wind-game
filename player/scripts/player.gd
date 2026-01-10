@@ -1,6 +1,11 @@
 extends CharacterBody2D
-
 class_name Player
+
+# enum to track the player's state
+enum PlayerState {
+	DEFAULT,
+	CLIMBING
+}
 
 # the amount of control the player has while in the air
 const AIR_CONTROL : float = 0.5
@@ -11,8 +16,16 @@ const ACCELERATION := 5000.0
 const BASE_AIR_DECEL : float = 400.0
 # the player's max speed
 const SPEED : float = 500.0
+# the player's climb speed
+const CLIMB_SPEED : float = 200.0
 # the velocity imparted by the player jumping
 const JUMP_VELOCITY : float = -700.0
+# the amount velocity the always goes up when jumping of a rope
+const ROPE_JUMP_Y : float = 0.5
+# the max amount of force the player can apply to a rope by swinging themselves
+const SWING_FORCE : float = 200
+# the amount of swing force immediately applied if pushing off a wall
+const SWING_WALL_FORCE : float = 200.0
 # how much faster the player runs while sprinting
 const SPRINT_MULTIPLIER: float = 1.5
 # The max speed at which the player can slide down wall while gripping
@@ -28,6 +41,7 @@ const TRACTION : float = 0.5
 const WIND_ACCEL : float = 1.0
 # how high the played can jump straight up walls while sliding down them
 const CLIMB_MOD : float = 0.5
+const TERMINAL_VELOCITY : float = 2000
 # how much time we ignore layer 4 when we try to drop down
 const DROP_TIME : float = 0.2
 
@@ -35,8 +49,12 @@ const DROP_TIME : float = 0.2
 var winds : Dictionary = {}
 # the total wind force currently applying to this object
 var total_wind : Vector2 = Vector2.ZERO
+# a var to track the normalised wind direction. using a var here spares us
+# having to calculate this every frame
+var wind_direction : Vector2
 # the strength of the currently applied wind
 var wind_strength : float = 0.0
+
 # how much time we have been dropping down for
 var current_drop_time : float = 0	
 
@@ -46,6 +64,17 @@ var wall_jump_stamina: float = 20.0
 var gravity: float = ProjectSettings.get_setting("physics/2d/default_gravity")
 var stamina := 100.0 # the player's current stamina
 var stamina_drained: bool = false # whether the player's stamina is drained
+var umbrella_open: bool = false # whether the umbrella is being used
+# the percentage by which the umbrella reduces gravity and magnifies wind
+var umbrella_strength: float = 0.5
+var umbrella_terminal_velocity: float = 0.1
+
+# the current object the player can interact with
+var interaction_target : Node2D = null
+# the player's current state
+var state : PlayerState = PlayerState.DEFAULT
+# the object the player is currently climbing
+var climbed : Node2D = null
 
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
@@ -53,10 +82,71 @@ var stamina_drained: bool = false # whether the player's stamina is drained
 # the class responsible for handling the player's animation
 @onready var anim_graph := $AnimatedSprite2D
 
-# every physics tick update the player's movement
-func _physics_process(delta: float) -> void:
-	movement(delta)
+# the umbrella visual
+@onready var umbrella := $FaceCursor/Umbrella
 
+# the marker of the grab point (so shoulder height marker)
+@onready var grab_point := $GrabPoint
+
+## every physics tick update the player's movement and run their tools and
+## interaction
+func _physics_process(delta: float) -> void:
+	# act based on the player's state
+	match state:
+		PlayerState.CLIMBING:
+			climbing(delta)
+		PlayerState.DEFAULT:
+			interaction()
+			movement(delta)
+	tools()
+	# Move the character
+	move_and_slide()
+
+## run the player's interaciton
+func interaction() -> void:
+	# if the player has something to interact with and jsut pressed intearct
+	# run the interaction
+	if interaction_target && Input.is_action_just_pressed("interact"):
+		interaction_target.interact(self)
+	
+## handle the player's movement while climbing	
+func climbing(delta: float) -> void:
+	# if the player just hit interact again stop climbing
+	if Input.is_action_just_pressed("interact"):
+		release_rope()
+		return
+	# if the player just hit jump we should also release the 
+	# rope but in this case we should also launch of it
+	if Input.is_action_just_pressed("jump"):
+		# release first so we get the ropes velocity
+		release_rope()
+		# and now add the jump velocity by first getting the direction
+		# we pointing
+		var jump_dir := Input.get_vector("left", "right", "up", "down")
+		# jumping looks bad and feels bad if is just lateral so we should
+		# always jump up by some amount (defined by the rope jump mod)
+		# and then jump laterally by what is left
+		# remember jump velocity is -ve by default
+		var jump = jump_dir * JUMP_VELOCITY * (1-ROPE_JUMP_Y) * -1
+		jump.y += (ROPE_JUMP_Y * JUMP_VELOCITY)
+		velocity += jump
+		return
+	# get the player's up/down and left/right axis
+	var vertical_dir : float = Input.get_axis("up", "down")
+	var horizontal_dir : float = Input.get_axis("left", "right")
+	
+	var vertical_force := vertical_dir * CLIMB_SPEED * delta
+	var horizontal_force := horizontal_dir * CLIMB_SPEED * delta
+	# if we are against a wall we should amplify our swing if pushing off it
+	if is_on_wall():
+		var wall_normal : Vector2 = get_wall_normal()
+		# check if we are pushing off the wall
+		if wall_normal.dot(Vector2(horizontal_dir, 0.0)) > 0.0:
+			horizontal_force += SWING_WALL_FORCE*horizontal_dir
+	# rotate us to match the climbed object's rotation
+	global_rotation = climbed.global_rotation
+	climbed.climb(vertical_force, horizontal_force)
+	
 ## Handle the player's movement for this tick
 ## [param delta] is the time (in seconds) since this was last called
 func movement(delta: float) -> void:
@@ -84,18 +174,55 @@ func movement(delta: float) -> void:
 	# we should also make a var to track how quickly we should 
 	# change speed this tick and default it to the standard acceleration
 	var speed_change : float = ACCELERATION
+	# we should use a var to track our effective wind
+	var effective_wind = total_wind
+	# if the umbrella is open we should check if it amplifies and redirects
+	# the wind at all
+	if umbrella_open:
+		var umbrella_dir = Vector2.DOWN.rotated(umbrella.global_rotation)
+		var alignment = umbrella_dir.dot(wind_direction)
+		# if the umbrella and wind align the wind should be amplified
+		if alignment > 0:
+			# get how much extra wind we should have
+			var extra_wind_strength = alignment * umbrella_strength * wind_strength
+			# this extra wind should be redirected by the umbrella
+			effective_wind += extra_wind_strength*umbrella_dir
 	# if we are on the floor we can move as normal
 	if is_on_floor():
 		# if we are on the floor we add a reduced total wind to ourselves
-		move_target += total_wind * TRACTION
+		move_target += effective_wind * TRACTION
 		# so our move target is just our speed * our input direction
 		move_target.x += input_dir * current_speed
 		# play the run animation or idle if not moving
 		anim_graph.grounded(input_dir, sprinting)
 	# if we aren't on the floor gravity should be applied
 	else:
+		# a value to represent the effective gravity the player is currently
+		# under as well as effective terminal velocity
+		var effective_gravity = gravity
+		var effective_terminal_velocity = TERMINAL_VELOCITY
+		# if the umbrella is open it should potentially affect the above
+		# two values
+		if umbrella_open:
+			# get the gravity direction (just down for now
+			var grav_dir: Vector2 = Vector2.DOWN
+			# see how much our gravity lines up with our umbrella direction
+			var umbrella_dir = Vector2.DOWN.rotated(umbrella.global_rotation)
+			var alignment = umbrella_dir.dot(grav_dir)
+			# if this is a negative number it means the gravity is facing
+			# opposite the direction of gravity and so should slow our fall...
+			# this should all only apply if we are moving down, otherwise
+			# jump height etc will be magnified
+			if alignment < 0 && velocity.y > 0:
+				# lets see exactly how aligned we are..... our vectors should
+				# already by normalised so our current alignment is already a
+				# scalar reflecting how (un)aligned we are
+				var grav_scalar : float = 1-abs(alignment)*umbrella_strength
+				var tv_scalar : float = 1-abs(alignment)*umbrella_terminal_velocity
+				effective_gravity *= grav_scalar
+				effective_terminal_velocity *= tv_scalar
 		# if we are in the air the full wind force should act on us
-		move_target += total_wind
+		move_target += effective_wind
 		# next apply gravity accounting for wall slide
 		# if we are pushing against a wall we should slide not fall.
 		# this should only apply if we are moving down tho otherwise
@@ -109,7 +236,25 @@ func movement(delta: float) -> void:
 				# play the wall slide animation
 				anim_graph.wall_sliding()
 		else:
-			velocity.y += gravity * delta
+			# added wind y to effective gravity multiplied by its accel
+			# here wind is acting as a force not a target but i believe it should
+			# feel right if we mult my accel since our wind force is essentially
+			# magnitude*accel when used as a target i think.....?
+			# we need to make sure wind doesn't apply if we are matching or
+			# exceeding it but we can't clamp as that will neuter jumping
+			var updraft = effective_wind.y*WIND_ACCEL * delta;
+			# this here clamps upward wind forces such that they don't apply
+			# if the player is already moving at them............ this may make
+			# the umbrella less fun so may be worth disabling when it is active
+			if velocity.y <= effective_wind.y and updraft < 0:
+				updraft = 0.0
+			velocity.y += effective_gravity * delta + updraft
+			# clamp y velocity at terminal velocity
+			# NOTE at the moment a downward wind still can't make you
+			# fall faster than terminal velocity. I've not implmented
+			# this as i think it is exceedingly unlikely to come up
+			velocity.y = min(velocity.y, effective_terminal_velocity)
+			
 			anim_graph.airborne(velocity)
 		# and our move target should be reduced to our air control
 		move_target.x += input_dir * current_speed * AIR_CONTROL
@@ -177,14 +322,12 @@ func movement(delta: float) -> void:
 
 	# if we are moving in the same direction as the wind we should also
 	# have the wind spped added to our speed change
-	if total_wind.dot(move_target) > 0:
-			speed_change += wind_strength * WIND_ACCEL
+	if effective_wind.dot(move_target) > 0:
+			speed_change += abs(effective_wind.x) * WIND_ACCEL
 
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
-	# Move the character
-	move_and_slide()
-	
+
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
 	stamina = min(stamina + 20 * delta, 100)
@@ -199,6 +342,54 @@ func respawn() -> void:
 	velocity = Vector2.ZERO
 	print("Player died!")
 
-# detects if spike is in the collision
-func _on_spike_detection_body_entered(body: Node2D) -> void:
-	respawn()
+## affector to run when a body enters the player's detection zone
+## everything on the layer that can trigger this (layer 3) MUST have a method
+## called affect that takes a Node2D........ since godot has no interfaces
+## this will have to suffice
+func _on_detector_body_entered(body: Node2D) -> void:
+	# if the body is something that can affect the player have it do so.
+	# only affectors should be able to trigger this to begin with but this
+	# check serves as a contignecy
+	body.affect(self)
+
+## manage the use of tools and equipment
+func tools() -> void:
+	# if the tool_1 button is pressed open the umbrella otherwise close it
+	if Input.is_action_pressed("tool_1"):
+		umbrella.visible = true
+		umbrella_open = true
+	else:
+		umbrella.visible = false
+		umbrella_open = false
+
+## function to run when a body exits the player's detection zone
+## currently this function just returns the current interaction target
+## to null
+func _on_detector_body_exited(body: Node2D) -> void:
+	if body == interaction_target:
+		interaction_target = null
+
+# funciton to run when the player grabs a rope
+func grap_rope(to_climb : Node2D) -> void:
+	state = PlayerState.CLIMBING
+	climbed = to_climb
+	# we should apply our velocity to rope segment as an impulse then set it
+	# to zero so we don't go flying randomly on release'
+	climbed.apply_impulse(velocity)
+	velocity = Vector2.ZERO
+	
+# funciton to run when the player releases a rope
+func release_rope() -> void:
+	state = PlayerState.DEFAULT
+	# get the velocity we should have from the rope segment
+	var release_velocity : Vector2 = climbed.climber_velocity()
+	climbed.release()
+	climbed = null
+	# now apply the release velocity
+	velocity = release_velocity
+	# reset global rotation
+	global_rotation = 0.0
+
+## gets the current global position of the grab point
+func get_grab_pos() -> Vector2:
+	return grab_point.global_position

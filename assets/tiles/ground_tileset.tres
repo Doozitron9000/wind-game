@@ -1,6 +1,7 @@
-[gd_resource type="TileSet" load_steps=3 format=3 uid="uid://dd3ipq8r2ennf"]
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://dd3ipq8r2ennf"]
 
 [ext_resource type="Texture2D" uid="uid://bvnthclf46yxw" path="res://assets/tiles/temp_tiles.png" id="1_d1328"]
+[ext_resource type="PackedScene" uid="uid://drnrpodi0uirh" path="res://interactable/hazard/spike.tscn" id="2_trny7"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gmgay"]
 texture = ExtResource("1_d1328")
@@ -277,8 +278,6 @@ texture = ExtResource("1_d1328")
 9:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 10:8/0 = 0
 10:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, 8, 6.5991592, 8, 4.467123, -3.1472921, -8, -3.2374563)
-11:8/0 = 0
-11:8/0/physics_layer_1/polygon_0/points = PackedVector2Array(0.8992939, -6.115196, 3.057598, 3.4173164, 5.5756207, -1.2590103, 8, 8, -8, 8, -5.75548, -1.978445, -2.3381634, 4.136751)
 12:8/0 = 0
 12:8/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 13:8/0 = 0
@@ -623,10 +622,15 @@ texture = ExtResource("1_d1328")
 1:6/0 = 0
 1:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_7t7fh"]
+scenes/1/scene = ExtResource("2_trny7")
+
 [resource]
-physics_layer_0/collision_layer = 1
+physics_layer_0/collision_layer = 3
+physics_layer_0/collision_mask = 3
 physics_layer_1/collision_layer = 4
 physics_layer_1/collision_mask = 0
 physics_layer_2/collision_layer = 8
 physics_layer_2/collision_mask = 0
 sources/0 = SubResource("TileSetAtlasSource_gmgay")
+sources/1 = SubResource("TileSetScenesCollectionSource_7t7fh")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://dsd7tbnp5fwgt"]
+[gd_scene load_steps=15 format=4 uid="uid://dsd7tbnp5fwgt"]
 
 [ext_resource type="PackedScene" uid="uid://couekb68vrmn6" path="res://player/player.tscn" id="1_46lwt"]
 [ext_resource type="Script" uid="uid://dka11c51g3we4" path="res://scripts/TestLevel_deadzone.gd" id="1_x25rp"]
@@ -11,6 +11,7 @@
 [ext_resource type="TileSet" uid="uid://dd3ipq8r2ennf" path="res://assets/tiles/ground_tileset.tres" id="9_ly3hx"]
 [ext_resource type="TileSet" uid="uid://boxowphtbmd0o" path="res://assets/tiles/pipes.tres" id="10_4n8tn"]
 [ext_resource type="PackedScene" uid="uid://bm6vmups0um7u" path="res://environment/wind_zone.tscn" id="11_wkb0e"]
+[ext_resource type="PackedScene" uid="uid://chc1gwiv2v1by" path="res://interactable/rope/rope.tscn" id="12_paa45"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmgay"]
 size = Vector2(11741.25, 211)
@@ -19,6 +20,16 @@ size = Vector2(11741.25, 211)
 radius = 7.0
 
 [node name="TestLevel" type="Node2D"]
+
+[node name="Rope" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(64, -1072)
+
+[node name="Rope2" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(688, -680)
+
+[node name="Rope3" parent="." instance=ExtResource("12_paa45")]
+position = Vector2(-56, -504)
+segment_count = 6
 
 [node name="Deadzone" type="Area2D" parent="." node_paths=PackedStringArray("respawn_point")]
 script = ExtResource("1_x25rp")
@@ -95,7 +106,7 @@ shape = SubResource("CircleShape2D_x25rp")
 
 [node name="GroundTiles" type="TileMapLayer" parent="."]
 scale = Vector2(2, 2)
-tile_map_data = PackedByteArray("AAAoAP7/AAAGAAEAAAApAP3/AAAGAAEAAAApAP7/AAAHAAEAAAAqAPz/AAAHAAAAAAAqAP3/AAAHAAIAAAAqAP7/AAAHAAMAAAArAPz/AAAIAAAAAAArAP3/AAAIAAIAAAArAP7/AAAIAAMAAAAsAPz/AAAJAAAAAAAsAP3/AAAJAAEAAAAsAP7/AAAJAAEAAAAtAPz/AAAJAAAAAAAtAP3/AAAJAAEAAAAtAP7/AAAJAAEAAAAuAPz/AAAJAAAAAAAuAP3/AAAJAAEAAAAuAP7/AAAJAAEAAAAvAPz/AAAJAAAAAAAvAP3/AAAJAAEAAAAvAP7/AAAJAAEAAAAwAPz/AAAJAAAAAAAwAP3/AAAJAAEAAAAwAP7/AAAJAAEAAAAxAPj/AAAJAAMAAAAxAPn/AAAMAAUAAAAxAPr/AAAMAAUAAAAxAPv/AAAMAAUAAAAxAPz/AAAJAAAAAAAxAP3/AAAJAAEAAAAxAP7/AAAJAAEAAAAyAPj/AAAKAAMAAAAyAPz/AAAJAAAAAAAyAP3/AAAJAAEAAAAyAP7/AAAJAAEAAAAzAPj/AAAKAAMAAAAzAPz/AAAJAAAAAAAzAP3/AAAJAAEAAAAzAP7/AAAJAAEAAAA0APj/AAAKAAMAAAA0APz/AAAJAAAAAAA0AP3/AAAJAAEAAAA0AP7/AAAJAAEAAAA1APj/AAAKAAMAAAA1APz/AAAJAAAAAAA1AP3/AAAHAAIAAAA1AP7/AAAHAAMAAAA2APj/AAAMAAMAAAA2APn/AAAMAAUAAAA2APr/AAAMAAUAAAA2APv/AAAMAAUAAAA2APz/AAAJAAAAAAA2AP3/AAAIAAIAAAA2AP7/AAAIAAMAAAAtAPv/AAALAAgAAAAuAPv/AAALAAgAAAAvAPv/AAALAAgAAAA=")
+tile_map_data = PackedByteArray("AAAoAP7/AAAGAAEAAAApAP3/AAAGAAEAAAApAP7/AAAHAAEAAAAqAPz/AAAHAAAAAAAqAP3/AAAHAAIAAAAqAP7/AAAHAAMAAAArAPz/AAAIAAAAAAArAP3/AAAIAAIAAAArAP7/AAAIAAMAAAAsAPz/AAAJAAAAAAAsAP3/AAAJAAEAAAAsAP7/AAAJAAEAAAAtAPz/AAAJAAAAAAAtAP3/AAAJAAEAAAAtAP7/AAAJAAEAAAAuAPz/AAAJAAAAAAAuAP3/AAAJAAEAAAAuAP7/AAAJAAEAAAAvAPz/AAAJAAAAAAAvAP3/AAAJAAEAAAAvAP7/AAAJAAEAAAAwAPz/AAAJAAAAAAAwAP3/AAAJAAEAAAAwAP7/AAAJAAEAAAAxAPj/AAAJAAMAAAAxAPn/AAAMAAUAAAAxAPr/AAAMAAUAAAAxAPv/AAAMAAUAAAAxAPz/AAAJAAAAAAAxAP3/AAAJAAEAAAAxAP7/AAAJAAEAAAAyAPj/AAAKAAMAAAAyAPz/AAAJAAAAAAAyAP3/AAAJAAEAAAAyAP7/AAAJAAEAAAAzAPj/AAAKAAMAAAAzAPz/AAAJAAAAAAAzAP3/AAAJAAEAAAAzAP7/AAAJAAEAAAA0APj/AAAKAAMAAAA0APz/AAAJAAAAAAA0AP3/AAAJAAEAAAA0AP7/AAAJAAEAAAA1APj/AAAKAAMAAAA1APz/AAAJAAAAAAA1AP3/AAAHAAIAAAA1AP7/AAAHAAMAAAA2APj/AAAMAAMAAAA2APn/AAAMAAUAAAA2APr/AAAMAAUAAAA2APv/AAAMAAUAAAA2APz/AAAJAAAAAAA2AP3/AAAIAAIAAAA2AP7/AAAIAAMAAAAtAPv/AQAAAAAAAQAuAPv/AQAAAAAAAQAvAPv/AQAAAAAAAQA=")
 tile_set = ExtResource("9_ly3hx")
 
 [node name="Pipes" type="TileMapLayer" parent="."]
