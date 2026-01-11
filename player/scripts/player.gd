@@ -84,6 +84,9 @@ var climbed : Node2D = null
 # the marker of the grab point (so shoulder height marker)
 @onready var grab_point := $GrabPoint
 
+# the grappliong hook scene so we can instantiate it
+@onready var grappling_hook_scene := preload("res://player/grappling_hook.tscn")
+
 ## every physics tick update the player's movement and run their tools and
 ## interaction
 func _physics_process(delta: float) -> void:
@@ -347,7 +350,26 @@ func tools() -> void:
 	else:
 		umbrella.visible = false
 		umbrella_open = false
-
+		
+	# now handle the grappling hook
+	if Input.is_action_just_pressed("tool_2"):
+		# make a new grappling hook
+		var grappling_hook : RigidBody2D = grappling_hook_scene.instantiate()
+		grappling_hook.launcher = self
+		# get the level and make the newly spawned hooks its child
+		get_tree().current_scene.add_child(grappling_hook)
+		# make the hook ignore collision with the player
+		grappling_hook.add_collision_exception_with(self)
+		# now move the hook to the player and rotate it to face the cursor
+		grappling_hook.global_position = grab_point.global_position
+		# make the hooks velocity match the player's (or at least a portion of
+		# it as 100% matching makes it move too fast)
+		grappling_hook.linear_velocity = velocity*0.5
+		grappling_hook.look_at(get_global_mouse_position())
+		grappling_hook.rotation += PI / 2
+		# now add a big impulse to the end of the hook
+		grappling_hook.apply_impulse(grappling_hook.global_transform.basis_xform(Vector2(0, -2000)))
+		
 ## function to run when a body exits the player's detection zone
 ## currently this function just returns the current interaction target
 ## to null
@@ -356,7 +378,7 @@ func _on_detector_body_exited(body: Node2D) -> void:
 		interaction_target = null
 
 # funciton to run when the player grabs a rope
-func grap_rope(to_climb : Node2D) -> void:
+func grab_rope(to_climb : Node2D) -> void:
 	state = PlayerState.CLIMBING
 	climbed = to_climb
 	# we should apply our velocity to rope segment as an impulse then set it

@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://chc1gwiv2v1by"]
+[gd_scene load_steps=3 format=3 uid="uid://r42d0vmopb5v"]
 
 [ext_resource type="Script" uid="uid://cwkwf25qieixt" path="res://interactable/scripts/rope/rope.gd" id="1_ixoxy"]
 

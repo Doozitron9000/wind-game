@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
 [ext_resource type="Script" uid="uid://bgbdbilfeucdd" path="res://player/scripts/anim_graph.gd" id="3_g1dw6"]
 [ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="4_hud"]
-[ext_resource type="Script" uid="uid://btodrwk22nut2" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
+[ext_resource type="Script" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)

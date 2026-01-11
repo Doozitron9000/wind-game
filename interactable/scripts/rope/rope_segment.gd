@@ -49,6 +49,10 @@ func _ready() -> void:
 	regular_collision.shape.height = length
 	# set the mass based on length
 	mass = length/64 * MASS_64
+	# if the above segment is already set as wouild be the case if this seg
+	# was spawned normally set it
+	if above_segment:
+		set_above_segment(above_segment)
 	
 func set_above_segment(new_above_segment : PhysicsBody2D) -> void:
 	above_segment = new_above_segment
@@ -69,7 +73,7 @@ func _physics_process(delta: float) -> void:
 ## to run when something attempts to grab the rope.
 ## interactor is the object interacting with the rope.
 func interact(interactor : Node2D) -> void:
-	interactor.grap_rope(self)
+	interactor.grab_rope(self)
 	climber = interactor
 	# now move the climber to the nearest point on the segment
 	var start_pos : Vector2 = closest_point_on_segment(climber.get_grab_pos())
@@ -160,3 +164,17 @@ func shrink_collision() -> void:
 	# and set us to detect and mask layer 1
 	set_collision_layer_value(1, false)
 	set_collision_mask_value(1, false)
+
+## change the above node of this segment by deleting and recreating the joint
+func change_nodea(new_a : PhysicsBody2D) -> void:
+	joint.queue_free()
+	joint = PinJoint2D.new()
+	add_child(joint)
+	joint.global_position = global_position
+	joint.node_a = new_a.get_path()
+	joint.node_b = self.get_path()
+	above_segment = new_a
+
+## gets the global position of the end of this segment
+func get_end_pos() -> Vector2:
+	return to_global((Vector2(0.0, length)))

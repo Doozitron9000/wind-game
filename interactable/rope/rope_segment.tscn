@@ -17,8 +17,9 @@ resource_local_to_scene = true
 size = Vector2(80, 64)
 
 [node name="RopeSegment" type="RigidBody2D" groups=["wind_affected"]]
-collision_layer = 130
+collision_layer = 128
 collision_mask = 2
+linear_damp = 1.0
 angular_damp = 7.0
 script = ExtResource("1_a002i")
 

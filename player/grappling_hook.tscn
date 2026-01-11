@@ -1,0 +1,47 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8xv0hmd58q5t"]
+
+[ext_resource type="Script" uid="uid://bbr4plmra6wm4" path="res://player/scripts/grappling_hook.gd" id="1_tocf6"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tocf6"]
+radius = 8.0
+
+[node name="GrapplingHook" type="RigidBody2D" groups=["wind_affected"]]
+collision_layer = 128
+collision_mask = 2
+mass = 5.0
+angular_damp = 7.0
+script = ExtResource("1_tocf6")
+
+[node name="Temp image" type="Polygon2D" parent="."]
+position = Vector2(0, 12)
+polygon = PackedVector2Array(-12, 8, 0, -12, 12, 8)
+
+[node name="FinalPin" type="PinJoint2D" parent="."]
+node_b = NodePath("..")
+
+[node name="TempCollision" type="CollisionShape2D" parent="."]
+position = Vector2(0, 12)
+shape = SubResource("CircleShape2D_tocf6")
+
+[node name="Detector" type="RayCast2D" parent="."]
+position = Vector2(0, 4)
+target_position = Vector2(0, -4)
+collision_mask = 16
+
+[node name="InitialDraw" type="Line2D" parent="."]
+position = Vector2(0, 20)
+points = PackedVector2Array(0, 0, 0, 0)
+width = 8.0
+
+[node name="AttachPoint" type="Node2D" parent="."]
+position = Vector2(0, 20)
+
+[node name="Detector2" type="RayCast2D" parent="."]
+position = Vector2(-6, 18)
+target_position = Vector2(-6, 2)
+collision_mask = 16
+
+[node name="Detector3" type="RayCast2D" parent="."]
+position = Vector2(6, 18)
+target_position = Vector2(6, 2)
+collision_mask = 16
