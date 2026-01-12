@@ -182,11 +182,11 @@ func movement(delta: float) -> void:
 		var umbrella_dir = Vector2.DOWN.rotated(umbrella.global_rotation)
 		var alignment = umbrella_dir.dot(wind_direction)
 		# if the umbrella and wind align the wind should be amplified
-		if alignment > 0:
-			# get how much extra wind we should have
-			var extra_wind_strength = alignment * umbrella_strength * wind_strength
-			# this extra wind should be redirected by the umbrella
-			effective_wind += extra_wind_strength*umbrella_dir
+		# get how much extra wind we should have
+		var extra_wind_strength = alignment * umbrella_strength * wind_strength
+		# this extra wind should be redirected by the umbrella
+		effective_wind += abs(extra_wind_strength)*umbrella_dir
+			
 	# if we are on the floor we can move as normal
 	if is_on_floor():
 		# if we are on the floor we add a reduced total wind to ourselves
@@ -213,12 +213,16 @@ func movement(delta: float) -> void:
 			# opposite the direction of gravity and so should slow our fall...
 			# this should all only apply if we are moving down, otherwise
 			# jump height etc will be magnified
-			if alignment < 0 && velocity.y > 0:
+			if velocity.y > 0:
 				# lets see exactly how aligned we are..... our vectors should
 				# already by normalised so our current alignment is already a
 				# scalar reflecting how (un)aligned we are
-				var grav_scalar : float = 1-abs(alignment)*umbrella_strength
-				var tv_scalar : float = 1-abs(alignment)*umbrella_terminal_velocity
+				var grav_scalar : float = 1-alignment*-1*umbrella_strength
+				var tv_scalar : float = 1.0
+				if alignment < 0:
+					tv_scalar = 1-abs(alignment)*(1-umbrella_terminal_velocity)
+				else:
+					tv_scalar = 1.0 + abs(alignment)*umbrella_strength
 				effective_gravity *= grav_scalar
 				effective_terminal_velocity *= tv_scalar
 		# if we are in the air the full wind force should act on us
