@@ -1,10 +1,11 @@
-[gd_scene load_steps=62 format=3 uid="uid://couekb68vrmn6"]
+[gd_scene load_steps=63 format=3 uid="uid://couekb68vrmn6"]
 
 [ext_resource type="Script" uid="uid://cnc7w4f7unuyw" path="res://player/scripts/player.gd" id="1_oul6g"]
 [ext_resource type="Texture2D" uid="uid://cgx7q7anf1rnq" path="res://assets/sprites/renwick/RenwickSpriteSheet1K.png" id="2_rkbax"]
 [ext_resource type="Script" uid="uid://bgbdbilfeucdd" path="res://player/scripts/anim_graph.gd" id="3_g1dw6"]
 [ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="4_hud"]
 [ext_resource type="Script" uid="uid://btodrwk22nut2" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
+[ext_resource type="PackedScene" uid="uid://dtc5w4n07wjn0" path="res://equipment/grapple.tscn" id="6_g6k8r"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)
@@ -477,6 +478,8 @@ position = Vector2(0, 2.9802322e-08)
 rotation = -1.5707964
 scale = Vector2(1.0139353, 1.0185806)
 polygon = PackedVector2Array(-23.67015, 23.5622, 23.670149, 23.562202, 15.7801, 31.41627, -1.9073486e-06, 39.270336, -15.780101, 31.416267)
+
+[node name="Grapple" parent="FaceCursor" instance=ExtResource("6_g6k8r")]
 
 [node name="GrabPoint" type="Node2D" parent="."]
 position = Vector2(0, -32)
