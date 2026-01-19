@@ -76,6 +76,13 @@ var state : PlayerState = PlayerState.DEFAULT
 # the object the player is currently climbing
 var climbed : Node2D = null
 
+# vars to track grapple point and if grappling
+var grapple_point : Vector2 = Vector2.ZERO
+var grappling : bool = false
+var grapple_length : float = 0.0
+var grapple_stiffness : float = 2000.0
+var grapple_damping : float = 120
+
 # A Node2D where the player will respawn
 @export var respawn_point : Node2D
 
@@ -327,6 +334,10 @@ func movement(delta: float) -> void:
 
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
+	
+	# finally, apply the grapple force
+	# Apply the grapple force
+	velocity += get_grapple_force(delta)
 
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
@@ -361,6 +372,11 @@ func tools() -> void:
 	else:
 		umbrella.visible = false
 		umbrella_open = false
+	
+	# if tool 2 is pressed use the grappling hook
+	if Input.is_action_just_pressed("tool_2"):
+		# pass the mpouse position
+		grapple(get_global_mouse_position());
 
 ## function to run when a body exits the player's detection zone
 ## currently this function just returns the current interaction target
@@ -393,3 +409,37 @@ func release_rope() -> void:
 ## gets the current global position of the grab point
 func get_grab_pos() -> Vector2:
 	return grab_point.global_position
+
+## func to run when grapple is clicked
+func grapple(point: Vector2) -> void:
+	# if grappling stop doing so and return
+	if grappling:
+		grappling = false
+		return
+	# otherwise grapple the new point
+	grapple_point = point
+	grappling = true
+	grapple_length = grapple_point.distance_to(grab_point.global_position)
+
+## Apply our grappling hooks appropriate force
+func get_grapple_force(delta: float) -> Vector2:
+	# just return if we are within the grapple's length or not grappling
+	if !grappling:
+		return Vector2.ZERO
+	# apply a force corresponding to our separation
+	var difference : Vector2 = grapple_point - grab_point.global_position
+	var dist_sq := difference.length_squared()
+
+	if dist_sq <= grapple_length * grapple_length:
+		return Vector2.ZERO
+	var dist := sqrt(dist_sq) # ONE sqrt
+	var stretch := dist - grapple_length
+	var direction := difference / dist
+	
+	# calculate radial damping
+	var damping : Vector2 = Vector2.ZERO
+	var radial_vel := velocity.dot(direction)
+	if radial_vel > 0:
+		damping = direction * radial_vel * grapple_damping
+
+	return (direction * stretch * grapple_stiffness - damping) * delta
