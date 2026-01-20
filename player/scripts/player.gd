@@ -334,8 +334,7 @@ func movement(delta: float) -> void:
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
 	
 	# finally, apply the grapple force
-	# Apply the grapple force
-	velocity += grapple.get_grapple_force(delta, velocity)
+	velocity = grapple.tether_velocity(velocity, delta)
 
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
