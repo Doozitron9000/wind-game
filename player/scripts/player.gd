@@ -374,7 +374,7 @@ func tools() -> void:
 	# if tool 2 is pressed use the grappling hook
 	if Input.is_action_just_pressed("tool_2"):
 		# pass the mpouse position
-		grapple.grapple(get_global_mouse_position(), grab_point)
+		grapple.launch()
 
 ## function to run when a body exits the player's detection zone
 ## currently this function just returns the current interaction target

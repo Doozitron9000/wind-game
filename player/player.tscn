@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bgbdbilfeucdd" path="res://player/scripts/anim_graph.gd" id="3_g1dw6"]
 [ext_resource type="PackedScene" uid="uid://chudyybn3l1rq" path="res://ui/hud.tscn" id="4_hud"]
 [ext_resource type="Script" uid="uid://btodrwk22nut2" path="res://player/scripts/face_cursor.gd" id="5_qjkh3"]
-[ext_resource type="PackedScene" uid="uid://dtc5w4n07wjn0" path="res://equipment/grapple.tscn" id="6_g6k8r"]
+[ext_resource type="PackedScene" uid="uid://m2fbfrfaoci5" path="res://equipment/grappling_hook.tscn" id="6_g6k8r"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_kqu6x"]
 size = Vector2(16, 48)

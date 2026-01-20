@@ -1,0 +1,18 @@
+[gd_scene load_steps=2 format=3 uid="uid://m2fbfrfaoci5"]
+
+[ext_resource type="Script" uid="uid://2x77oxdg1itc" path="res://equipment/scripts/grappling_hook.gd" id="1_3fi5d"]
+
+[node name="GrapplingHook" type="Node2D"]
+script = ExtResource("1_3fi5d")
+
+[node name="RayCast" type="RayCast2D" parent="."]
+visible = false
+target_position = Vector2(0, 0)
+
+[node name="Cable" type="Line2D" parent="."]
+visible = false
+points = PackedVector2Array(0, 0, 0, 0)
+width = 2.0
+
+[node name="Head" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 4, 0, -4, 8, 0)
