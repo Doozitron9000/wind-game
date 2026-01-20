@@ -112,6 +112,21 @@ func tether_velocity(velocity: Vector2, delta: float) -> Vector2:
 
 	var redirected : Vector2 = tangent * abs(radial_speed)
 	
+	# bottom-of-swing assist
+	# basically because of the nature of this you get kinda stuck at the bottom
+	# of the swing so this cheats and forces you to a vertical hang
+	var verticalness : float = abs(dir.dot(Vector2.UP))   # 1 = vertical rope
+	var tangential_speed_sq := tangential_component.length_squared()
+	if verticalness > 0.95 and tangential_speed_sq < 400.0:
+		var downward = signf(tangent.dot(Vector2.DOWN))
+		if verticalness > 0.999:
+			tangential_component = Vector2.ZERO
+		else:
+			if downward > 0:
+				tangential_component = tangent * 40.0
+			else:
+				tangential_component = tangent * -40.0
+	
 	# --- recombine ---
 	# but reduce redirected velocity the more it poitns up to prevent
 	# infinite energy exploits
@@ -126,6 +141,7 @@ func tether_velocity(velocity: Vector2, delta: float) -> Vector2:
 	var radial_vel := velocity.dot(dir)
 	var damped := dir * radial_vel * damping
 	accel -= damped
+	
 	return new_velocity + accel * delta
 
 func assess_hit() -> bool:
