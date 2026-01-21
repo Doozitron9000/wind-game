@@ -91,6 +91,9 @@ var climbed : Node2D = null
 # the grappling hook
 @onready var grapple := $FaceCursor/Grapple
 
+func _ready() -> void:
+	grapple.ignore(self)
+
 ## every physics tick update the player's movement and run their tools and
 ## interaction
 func _physics_process(delta: float) -> void:

@@ -152,3 +152,7 @@ func assess_hit() -> bool:
 	state = State.ATTACHED
 	length =  grapple_point.distance_to(global_position)
 	return true
+
+## Ignore the given object from ray cast checks
+func ignore(to_ignore: Node2D) -> void:
+	raycast.add_exception(to_ignore)
