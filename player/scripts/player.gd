@@ -88,6 +88,12 @@ var climbed : Node2D = null
 # the marker of the grab point (so shoulder height marker)
 @onready var grab_point := $GrabPoint
 
+# the grappling hook
+@onready var grapple := $FaceCursor/Grapple
+
+func _ready() -> void:
+	grapple.ignore(self)
+
 ## every physics tick update the player's movement and run their tools and
 ## interaction
 func _physics_process(delta: float) -> void:
@@ -272,6 +278,8 @@ func movement(delta: float) -> void:
 		
 	# Jump
 	if Input.is_action_just_pressed("jump"):
+		# also stop grappling
+		grapple.release()
 		# if the player is ont he floor they can always jump
 		if is_on_floor():
 			velocity.y = JUMP_VELOCITY
@@ -331,6 +339,9 @@ func movement(delta: float) -> void:
 
 	# accelerate towards our move target then apply the character's movement
 	velocity.x = velocity.move_toward(move_target, delta*speed_change).x
+	
+	# finally, apply the grapple force
+	velocity = grapple.tether_velocity(velocity, delta)
 
 ## revovers an amount of stamina based on the current delta
 func recover_stamina(delta: float) -> void:
@@ -365,6 +376,11 @@ func tools() -> void:
 	else:
 		umbrella.visible = false
 		umbrella_open = false
+	
+	# if tool 2 is pressed use the grappling hook
+	if Input.is_action_just_pressed("tool_2"):
+		# pass the mpouse position
+		grapple.launch()
 
 ## function to run when a body exits the player's detection zone
 ## currently this function just returns the current interaction target
