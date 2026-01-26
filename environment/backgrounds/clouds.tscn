@@ -6,10 +6,15 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qjo45"]
 shader = ExtResource("2_lsbnf")
 
-[node name="Clouds" type="Node2D"]
+[node name="Clouds" type="CanvasLayer"]
+layer = -100
 script = ExtResource("1_anhnf")
 
 [node name="ColorRect" type="ColorRect" parent="."]
 material = SubResource("ShaderMaterial_qjo45")
-offset_right = 615.0
-offset_bottom = 284.0
+custom_minimum_size = Vector2(0, 128)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

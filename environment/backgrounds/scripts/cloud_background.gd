@@ -1,14 +1,18 @@
-extends Node2D
+extends CanvasLayer
 
 const NOISE_HEIGHT := 32
 const NOISE_WIDTH := 128
+const ATLAS := preload("res://environment/backgrounds/assets/Clouds.png")
 
 var density := 0.1
 
 @onready var cloud_rect := $ColorRect
 
+
+## generate the metadata dexture and set other shader params on ready
 func _ready() -> void:
 	cloud_rect.material.set_shader_parameter("cloud_meta", generate_noise())
+	cloud_rect.material.set_shader_parameter("cloud_atlas", ATLAS)
 
 func generate_noise() -> ImageTexture:
 	# make the image and rng
