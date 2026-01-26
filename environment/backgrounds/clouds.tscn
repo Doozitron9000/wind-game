@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://bvauhu7j2n2nx"]
+
+[ext_resource type="Script" uid="uid://dhukps0fgqurq" path="res://environment/backgrounds/scripts/cloud_background.gd" id="1_anhnf"]
+[ext_resource type="Shader" uid="uid://cfqa1ryus3dd8" path="res://environment/backgrounds/shaders/cloud_background.gdshader" id="2_lsbnf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qjo45"]
+shader = ExtResource("2_lsbnf")
+
+[node name="Clouds" type="Node2D"]
+script = ExtResource("1_anhnf")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_qjo45")
+offset_right = 615.0
+offset_bottom = 284.0
