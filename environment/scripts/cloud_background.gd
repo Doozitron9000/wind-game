@@ -65,7 +65,7 @@ func _ready():
 		var base_pos = cloud["base_pos"]	
 		mmi.multimesh.set_instance_transform_2d(i, Transform2D(0.0, base_pos))
 		var uv = CLOUD_UVS[randi() % CLOUD_UVS.size()]
-		mmi.multimesh.set_instance_custom_data(i, Color(depth, uv.position.x, uv.position.y, 0.0))
+		mmi.multimesh.set_instance_custom_data(i, Color(depth, uv.position.x, uv.position.y, randf()))
 
 func _process(delta):
 	# Update shader parameters for camera offset and world size

@@ -7,8 +7,10 @@ uniform sampler2D cloud_map;
 
 varying float v_depth;
 varying vec2 v_uv_offset;
+varying float v_seed;
 
 void vertex() {
+    v_seed = INSTANCE_CUSTOM.a;
     v_depth = INSTANCE_CUSTOM.r;
     v_uv_offset = vec2(INSTANCE_CUSTOM.g, INSTANCE_CUSTOM.b);
     float depth = 1.0 - INSTANCE_CUSTOM.r;
@@ -27,5 +29,11 @@ void fragment() {
     vec2 uv_offset = v_uv_offset;
     vec2 uv_size = uv_offset.x < 0.5 ? vec2(0.5, 0.25) : vec2(0.5, 0.5);
     vec2 final_uv = uv_offset + (1.0 - UV) * uv_size;
-    COLOR = texture(cloud_map, final_uv);
+    float seed = v_seed; // just use depth as a seed
+    vec2 warp = vec2(
+        sin(final_uv.y * 6.0 + seed * 6.28) * 0.02,
+        sin(final_uv.x * 6.0 + seed * 6.28) * 0.02
+    ) ;
+    vec4 cloud = texture(cloud_map, final_uv + warp);
+    COLOR = vec4(cloud.r, cloud.r, cloud.r, cloud.a);
 }

@@ -19,7 +19,9 @@ radius = 7.0
 [node name="CloudBackground" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("13_axl34")]
 camera = NodePath("../Player/Camera")
 world_size = Vector2(16384, 2048)
-cloud_base_y = 500.0
+depth_max = 1.09
+wind_velocity = Vector2(-20, 0)
+cloud_base_y = 1000.0
 horizon_y = -200.0
 
 [node name="Rope" parent="." instance=ExtResource("12_paa45")]
