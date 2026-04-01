@@ -1,8 +1,14 @@
-[gd_scene load_steps=7 format=3 uid="uid://tpdtceepdi8l"]
+[gd_scene load_steps=9 format=3 uid="uid://tpdtceepdi8l"]
 
 [ext_resource type="Script" uid="uid://d2lr7s5e50xls" path="res://environment/scripts/cloud_background.gd" id="1_gmmlf"]
+[ext_resource type="Shader" uid="uid://cl10rj6b5fwwe" path="res://environment/shaders/sky.gdshader" id="2_2qnu2"]
 [ext_resource type="Shader" uid="uid://dm0c88y13yte8" path="res://environment/shaders/cloud_parallax.gdshader" id="2_nv4c3"]
 [ext_resource type="Texture2D" uid="uid://lr52qcmqp0mh" path="res://environment/images/Clouds.png" id="3_nv4c3"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hu55a"]
+shader = ExtResource("2_2qnu2")
+shader_parameter/sky_top = Color(0.2, 0.4, 0.8, 1)
+shader_parameter/sky_bottom = Color(0.6, 0.8, 1, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_gmmlf"]
 shader = ExtResource("2_nv4c3")
@@ -22,6 +28,17 @@ mesh = SubResource("QuadMesh_bdd3m")
 script = ExtResource("1_gmmlf")
 cloud_count = 200
 
-[node name="MultiMeshInstance2D" type="MultiMeshInstance2D" parent="."]
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -10
+
+[node name="SkyRect" type="ColorRect" parent="Background"]
+material = SubResource("ShaderMaterial_hu55a")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Clouds" type="MultiMeshInstance2D" parent="."]
 material = SubResource("ShaderMaterial_gmmlf")
 multimesh = SubResource("MultiMesh_y224v")

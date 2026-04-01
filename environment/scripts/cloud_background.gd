@@ -28,9 +28,12 @@ var _wind_accumulator: Vector2 = Vector2.ZERO
 # The shader material used for the clouds, stored for updating shader parameters
 var _mat: ShaderMaterial
 # Reference to the MultiMeshInstance2D node for setting up cloud instances
-@onready var mmi: MultiMeshInstance2D = $MultiMeshInstance2D
+@onready var mmi: MultiMeshInstance2D = $Clouds
+@onready var sky_background: ColorRect = $Background/SkyRect
 
 func _ready():
+	# Set the background's horizon var
+	sky_background.material.set_shader_parameter("horizon", world_y_to_screen_uv(horizon_y))
 	# Set up the shader material for the clouds
 	var mat = ShaderMaterial.new()
 	mat.shader = load("res://environment/shaders/cloud_parallax.gdshader")
@@ -42,12 +45,12 @@ func _ready():
 	mmi.multimesh.instance_count = cloud_count
 		
 	# Initialize each cloud instance with random depth and position, and store depth in custom data
-	# depth: 0 = near (large, fast), 1 = far (small, slow)
+	# depth: 1 = near (large, fast), 0 = far (small, slow)
 	var clouds = []
 	for i in cloud_count:
 		# disproportionately spawn distant clouds
-		var depth = lerp(depth_min, depth_max, 1.0 - pow(randf(), 0.1))  # bias towards higher depth (farther clouds)
-		# Far clouds (high depth) near horizon, near clouds (low depth) spread more
+		var depth = lerp(depth_min, depth_max, 1.0 - pow(randf(), 0.1))  # bias towards lower depth (farther clouds)
+		# Far clouds (low depth) near horizon, near clouds (high depth) spread more
 		var y = lerp(horizon_y, cloud_base_y, depth) + randf_range(-y_spread, y_spread)
 		var viewport_width = get_viewport_rect().size.x
 		var x_range = lerp(viewport_width * 0.5, world_size.x * 0.5, depth)
@@ -59,6 +62,7 @@ func _ready():
 
 	clouds.sort_custom(func(a, b): return a.depth < b.depth)  # far first for correct layering
 
+	# now the clouds are sorted back to front, we can assign their transforms and custom data for the shader
 	for i in clouds.size():
 		var cloud = clouds[i]
 		var depth = cloud["depth"]
@@ -73,3 +77,9 @@ func _process(delta):
 	_mat.set_shader_parameter("world_size", world_size)
 	_wind_accumulator += wind_velocity * delta
 	_mat.set_shader_parameter("wind_offset", _wind_accumulator)
+
+## Helper function to convert a world Y coordinate to a screen UV coordinate (0-1) for shader use
+func world_y_to_screen_uv(world_y: float) -> float:
+	var viewport_height = get_viewport_rect().size.y
+	var screen_y = world_y - camera.global_position.y + viewport_height * 0.5
+	return screen_y / viewport_height
